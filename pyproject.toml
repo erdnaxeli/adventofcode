@@ -8,6 +8,7 @@ authors = ["Alexandre Morignot <erdnaxeli@cervoi.se>"]
 python = "^3.6"
 numpy = "^1.17"
 jupyterlab = "^1.2"
+trio = "^0.13.0"
 
 [tool.poetry.dev-dependencies]
 
