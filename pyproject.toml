@@ -5,7 +5,7 @@ description = ""
 authors = ["Alexandre Morignot <erdnaxeli@cervoi.se>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 numpy = "^1.17"
 jupyterlab = "^1.2"
 trio = "^0.13.0"
