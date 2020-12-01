@@ -200,15 +200,18 @@ module Aoc2020
     1793,
     1901,
     1909,
-  ]
+].sort!
 
   def self.day1p1
     INPUT_DAY1.each_index do |i|
       x = INPUT_DAY1[i]
       INPUT_DAY1[i..].each do |y|
-        if x + y == 2020
+        r = x + y
+        if r == 2020
           puts x*y
           return
+        elsif r > 2020
+          break
         end
       end
     end
@@ -219,10 +222,19 @@ module Aoc2020
       x = INPUT_DAY1[i]
       INPUT_DAY1[i..].each_index do |j|
         y = INPUT_DAY1[j]
+        r_tmp = x + y
+
+        if r_tmp >= 2020
+          break
+        end
+
         INPUT_DAY1[j..].each do |z|
+          r = r_tmp + z
           if x + y + z == 2020
             puts x*y*z
             return
+          elsif r > 2020
+            break
           end
         end
       end
