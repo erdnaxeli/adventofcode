@@ -1,0 +1,13 @@
+name: aoc_2020
+version: 0.1.0
+
+authors:
+  - your-name-here <your-email-here>
+
+targets:
+  aoc_2020:
+    main: src/aoc_2020.cr
+
+crystal: 0.35.1
+
+license: MIT
