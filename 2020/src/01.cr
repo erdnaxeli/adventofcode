@@ -200,7 +200,7 @@ module Aoc2020
     1793,
     1901,
     1909,
-].sort!
+  ].sort!
 
   def self.day1p1
     INPUT_DAY1.each_index do |i|
