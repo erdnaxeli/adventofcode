@@ -45,12 +45,10 @@ module Aoc2020
   end
 
   def self.day2p1
-    count = 0
     puts PasswordDb.new(INPUT_DAY2).count { |p| p.valid? }
   end
 
   def self.day2p2
-    count = 0
     puts PasswordDb.new(INPUT_DAY2).count { |p| p.positions_valid? }
   end
 end
