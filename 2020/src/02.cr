@@ -1,6 +1,6 @@
-require "./inputs/02"
-
 module Aoc2020
+  INPUT_DAY2 = File.read_lines("./inputs/02.txt")
+
   record Policy, min : Int32, max : Int32, letter : Char
   record PasswordEntry, password : String, policy : Policy do
     def valid?
@@ -16,36 +16,31 @@ module Aoc2020
   class PasswordDb
     include Iterator(PasswordEntry)
 
+    @lines : Iterator(String)
+
     def initialize(input)
-      @channel = Channel(PasswordEntry).new(0)
-      spawn parse_password_db(input)
+      @lines = input.each
     end
 
     def next
-      if v = @channel.receive?
-        v
-      else
-        stop
-      end
+      parse_next_line
     end
 
-    private def parse_password_db(input)
-      input.each_line do |l|
-        if result = l.match(/(?<min>\d+)-(?<max>\d+)\s(?<letter>[a-z]):\s(?<password>[a-z0-0]+)/)
-          password_entry = PasswordEntry.new(
-            password: result["password"],
-            policy: Policy.new(
-              min: result["min"].to_i,
-              max: result["max"].to_i,
-              letter: result["letter"][0],
-            )
-          )
-
-          @channel.send(password_entry)
-        end
+    private def parse_next_line
+      l = @lines.next
+      if l.is_a?(Iterator::Stop)
+        return l
       end
 
-      @channel.close
+      result = l.match(/(?<min>\d+)-(?<max>\d+)\s(?<letter>[a-z]):\s(?<password>[a-z0-0]+)/).not_nil!
+      password_entry = PasswordEntry.new(
+        password: result["password"],
+        policy: Policy.new(
+          min: result["min"].to_i,
+          max: result["max"].to_i,
+          letter: result["letter"][0],
+        )
+      )
     end
   end
 

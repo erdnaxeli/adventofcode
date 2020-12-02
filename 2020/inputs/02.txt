@@ -1,5 +1,3 @@
-module Aoc2020
-  INPUT_DAY2 = %(
 13-14 f: ffffffffnfffvv
 10-12 w: kwtzpnzspwwwdz
 2-3 n: nnjn
@@ -1000,5 +998,3 @@ module Aoc2020
 1-2 v: pwbr
 15-18 r: xrrrbrrrgrpbrprrqrqr
 2-4 g: zgggp
-  )
-end
