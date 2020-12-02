@@ -8,6 +8,11 @@ targets:
   aoc_2020:
     main: src/aoc_2020.cr
 
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: ~> 0.13.0
+
 crystal: 0.35.1
 
 license: MIT

@@ -33,7 +33,7 @@ module Aoc2020
       end
 
       result = l.match(/(?<min>\d+)-(?<max>\d+)\s(?<letter>[a-z]):\s(?<password>[a-z0-0]+)/).not_nil!
-      password_entry = PasswordEntry.new(
+      PasswordEntry.new(
         password: result["password"],
         policy: Policy.new(
           min: result["min"].to_i,
