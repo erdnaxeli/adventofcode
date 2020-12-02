@@ -4,10 +4,8 @@ module Aoc2020
   record Policy, min : Int32, max : Int32, letter : Char
   record PasswordEntry, password : String, policy : Policy do
     def valid?
-      counter = Hash(Char, Int32).new { |h, k| h[k] = 0 }
-      password.each_char { |c| counter[c] += 1 }
-
-      policy.min <= counter[policy.letter] <= policy.max
+      count = password.each_char.count(policy.letter)
+      policy.min <= count <= policy.max
     end
 
     def positions_valid?
