@@ -1,0 +1,2 @@
+format:
+	crystal tool format
