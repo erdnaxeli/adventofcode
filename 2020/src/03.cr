@@ -4,10 +4,10 @@ module Aoc2020
   end
 
   def self.count_trees(map, slop_x, slop_y)
-    (slop_x...(map.size)).step(slop_x).count do |x|
-      y = (slop_y * x // slop_x) % map[0].size
-
-      map[x][y] == '#'
+    x_steps = (0...(map.size)).step(slop_x)
+    y_steps = 0.step(by: slop_y)
+    x_steps.zip(y_steps).count do |x, y|
+      map[x][y % map[0].size] == '#'
     end
   end
 
