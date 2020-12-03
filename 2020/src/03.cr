@@ -4,15 +4,11 @@ module Aoc2020
   end
 
   def self.count_trees(map, slop_x, slop_y)
-    count = 0
-    (0..).each do |i|
-      x = i * slop_x
-      break if x >= map.size
-      y = (i * slop_y) % map[0].size
-      count += 1 unless map[x][y] == '.'
-    end
+    (slop_x...(map.size)).step(slop_x).count do |x|
+      y = (slop_y * x // slop_x) % map[0].size
 
-    count
+      map[x][y] == '#'
+    end
   end
 
   def self.day3p1
