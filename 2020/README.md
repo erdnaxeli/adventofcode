@@ -5,3 +5,4 @@ Learnt this year:
 * Array.product
 * Iterator.step
 * Number.step
+* Comparable
