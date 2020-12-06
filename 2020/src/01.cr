@@ -203,7 +203,7 @@ module Aoc2020
   ].sort!
 
   def self.day1p1
-INPUT_DAY1.combination(2).select &.sum == 2020
+    INPUT_DAY1.combination(2).select &.sum == 2020
 
     INPUT_DAY1.each_index do |i|
       x = INPUT_DAY1[i]
