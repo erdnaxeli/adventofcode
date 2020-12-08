@@ -2,6 +2,7 @@ require "./01"
 require "./02"
 require "./03"
 require "./04"
+require "./05"
 
 module Aoc2015
   VERSION = "0.1.0"
@@ -57,7 +58,16 @@ module Aoc2015
       AdventCoin.new(INPUT).salt(6)
     end
   end
+
+  module Day5
+    extend self
+
+    INPUT = File.read("./inputs/05.txt")
+
+    def p1
+      INPUT.each_line.count { |l| NiceString.nice?(l) }
+    end
+  end
 end
 
-p! Aoc2015::Day4.p1
-p! Aoc2015::Day4.p2
+p! Aoc2015::Day5.p1
