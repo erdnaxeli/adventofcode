@@ -67,7 +67,11 @@ module Aoc2015
     def p1
       INPUT.each_line.count { |l| NiceString.nice?(l) }
     end
+
+    def p2
+      INPUT.each_line.count { |l| NiceString.nice2?(l) }
+    end
   end
 end
 
-p! Aoc2015::Day5.p1
+pp Aoc2015::Day5.p2
