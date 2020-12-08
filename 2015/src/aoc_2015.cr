@@ -1,6 +1,7 @@
 require "./01"
 require "./02"
 require "./03"
+require "./04"
 
 module Aoc2015
   VERSION = "0.1.0"
@@ -42,6 +43,21 @@ module Aoc2015
       Santa.new(INPUT).distinct_houses_with_robot_2
     end
   end
+
+  module Day4
+    extend self
+
+    INPUT = "iwrupvqb"
+
+    def p1
+      AdventCoin.new(INPUT).salt(5)
+    end
+
+    def p2
+      AdventCoin.new(INPUT).salt(6)
+    end
+  end
 end
 
-pp Aoc2015::Day3.p2
+p! Aoc2015::Day4.p1
+p! Aoc2015::Day4.p2
