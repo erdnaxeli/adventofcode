@@ -5,7 +5,7 @@ module Aoc2020
 
   def self.count_everyone_questions(input)
     people_count = input.lines.size
-    input.each_char.select('a'..'z').tally.select { |k, v| v == people_count }.size
+    input.each_char.select('a'..'z').tally.count { |_, v| v == people_count }
   end
 
   def self.day6p1

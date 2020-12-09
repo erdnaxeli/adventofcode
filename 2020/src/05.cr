@@ -56,7 +56,7 @@ module Aoc2020
   end
 
   def self.day5p2
-    input = File.read("./inputs/05.txt").each_line.map { |l| BoardingPass.new(l) }.to_a.sort.reduce(0) do |acc, pass|
+    File.read("./inputs/05.txt").each_line.map { |l| BoardingPass.new(l) }.to_a.sort.reduce(0) do |acc, pass|
       if acc == 0
         pass.id
       else

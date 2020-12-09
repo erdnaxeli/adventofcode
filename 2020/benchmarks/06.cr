@@ -19,11 +19,11 @@ puts
 Benchmark.ips do |x|
   x.report("tally, new hash") do
     people_count = input.lines.size
-    input.each_char.select('a'..'z').tally.select { |k, v| v == people_count }.size
+    input.each_char.select('a'..'z').tally.count { |_, v| v == people_count }
   end
   x.report("tally, inplace") do
     people_count = input.lines.size
-    input.each_char.select('a'..'z').tally.tap(&.select! { |k, v| v == people_count }).size
+    input.each_char.select('a'..'z').tally.tap(&.select! { |_, v| v == people_count }).size
   end
   x.report("reduce") { input.each_line.map(&.chars).reduce { |a, b| a & b }.size }
 end

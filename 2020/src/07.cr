@@ -28,8 +28,8 @@ module Aoc2020
     result = /^(?<container>[a-z\s]+) bags contain (?<contained>.*)$/.match(input).not_nil!
     container = result["container"]
 
-    result["contained"].scan(/(?<count>\d+) (?<bag>[a-z\s]+) bags?/).each do |result|
-      yield container, result["count"].to_i, result["bag"]
+    result["contained"].scan(/(?<count>\d+) (?<bag>[a-z\s]+) bags?/).each do |x|
+      yield container, x["count"].to_i, x["bag"]
     end
   end
 

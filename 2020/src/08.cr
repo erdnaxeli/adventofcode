@@ -9,8 +9,8 @@ class Computer
     def self.from_code(code : String) : Instruction
       result = /\A(?<inst>[a-z]{3}) (?<arg>(?:\+|-)\d+)\z/.match(code).not_nil!
       Instruction.new(
-        type = InstructionType.parse(result["inst"]),
-        arg = result["arg"].to_i,
+        type: InstructionType.parse(result["inst"]),
+        arg: result["arg"].to_i,
       )
     end
   end
@@ -73,11 +73,11 @@ class Computer
                  end
       new_code = code.dup
       new_code[i] = Instruction.new(
-        type = new_type,
-        arg = code[i].arg,
+        type: new_type,
+        arg: code[i].arg,
       )
       c = Computer.new(new_code)
-      c.run(can_loop = false)
+      c.run(can_loop: false)
       if c.success?
         return c.acc
       end
@@ -90,7 +90,7 @@ module Aoc2020
 
   def self.day8p1
     c = Computer.new(INPUT_D08)
-    c.run(can_loop = false)
+    c.run(can_loop: false)
     c.acc
   end
 
