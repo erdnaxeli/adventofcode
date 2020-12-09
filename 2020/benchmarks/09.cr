@@ -11,6 +11,10 @@ Benchmark.ips do |bench|
     input = File.read("./inputs/09.txt").each_line.map &.to_i64
     input.cons(26).find { |x| !x[0...25].combinations(2).map(&.sum).includes? x[25] }.try &.last
   end
+  bench.report("better oneliner") do
+    input = File.read("./inputs/09.txt").each_line.map &.to_i64
+    input.cons(26).find { |x| x.each { |y| x[25] - y != y && x.includes? x[25] - y } }.try &.last
+  end
 end
 
 puts
@@ -36,3 +40,11 @@ Benchmark.ips do |x|
     s << 0
   end
 end
+
+# XMAS   8.91k (112.24µs) (± 7.80%)  26.7kB/op        fastest
+# oneliner 105.69  (  9.46ms) (± 4.51%)  15.9MB/op  84.30× slower
+# better oneliner   4.41k (226.94µs) (± 7.21%)   496kB/op   2.02× slower
+#
+# array  33.86M ( 29.54ns) (±16.63%)  0.0B/op        fastest
+# deque  28.21M ( 35.44ns) (±14.98%)  0.0B/op   1.20× slower
+# set   9.21M (108.61ns) (±14.45%)  0.0B/op   3.68× slower
