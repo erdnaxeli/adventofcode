@@ -86,16 +86,16 @@ class Computer
 end
 
 module Aoc2020
-  INPUT = File.read("./inputs/08.txt")
+  INPUT_D08 = File.read("./inputs/08.txt")
 
   def self.day8p1
-    c = Computer.new(INPUT)
+    c = Computer.new(INPUT_D08)
     c.run(can_loop = false)
     c.acc
   end
 
   def self.day8p2
-    Computer.fix_code(INPUT)
+    Computer.fix_code(INPUT_D08)
   end
 end
 
