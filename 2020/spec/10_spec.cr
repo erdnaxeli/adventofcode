@@ -53,7 +53,7 @@ describe Aoc2020 do
     Aoc2020.count_valid_combinations2(input).should eq(8)
   end
 
-  it "works p2 2" do 
+  it "works p2 2" do
     input = %(28
 33
 18
