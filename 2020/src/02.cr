@@ -52,6 +52,3 @@ module Aoc2020
     puts PasswordDb.new(INPUT_DAY2).count { |p| p.positions_valid? }
   end
 end
-
-Aoc2020.day2p1
-Aoc2020.day2p2

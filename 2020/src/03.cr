@@ -21,6 +21,3 @@ module Aoc2020
     puts [{1, 1}, {1, 3}, {1, 5}, {1, 7}, {2, 1}].product { |x, y| count_trees(map, x, y).to_i64 }
   end
 end
-
-Aoc2020.day3p1
-Aoc2020.day3p2

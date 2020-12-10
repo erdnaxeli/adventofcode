@@ -93,6 +93,3 @@ module Aoc2020
     puts read_passports(File.read("./inputs/04.txt")).count &.is_valid?
   end
 end
-
-Aoc2020.day4p1
-Aoc2020.day4p2

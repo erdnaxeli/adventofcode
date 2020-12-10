@@ -98,5 +98,3 @@ module Aoc2020
     Computer.fix_code(INPUT_D08)
   end
 end
-
-p! Aoc2020.day8p2

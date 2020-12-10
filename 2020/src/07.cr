@@ -85,5 +85,3 @@ module Aoc2020
     end
   end
 end
-
-puts Aoc2020::Day7.p2

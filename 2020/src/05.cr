@@ -70,6 +70,3 @@ module Aoc2020
     end
   end
 end
-
-Aoc2020.day5p1
-Aoc2020.day5p2

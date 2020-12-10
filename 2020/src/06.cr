@@ -16,6 +16,3 @@ module Aoc2020
     puts File.read("./inputs/06.txt").split("\n\n").sum { |group| count_everyone_questions(group) }
   end
 end
-
-Aoc2020.day6p1
-Aoc2020.day6p2

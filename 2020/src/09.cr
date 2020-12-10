@@ -61,5 +61,3 @@ module Aoc2020
     XMAS(Int64).new(input).weakness(invalid)
   end
 end
-
-pp Aoc2020.day9p1
