@@ -143,4 +143,3 @@ module Aoc2020
     boat.x.abs + boat.y.abs
   end
 end
-
