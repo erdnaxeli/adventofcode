@@ -5,33 +5,33 @@ require "../src/17"
 describe ConwaySpace do
   describe "step 0" do
     it "has 5 cubes" do
-      space = ConwaySpace.new(".#.\n..#\n###")
-      space.count_cubes.should eq(5)
+      space = ConwaySpace::Resolver(Tuple(Int32, Int32, Int32), ConwaySpace::Cube3D).new(".#.\n..#\n###")
+      space.cubes.size.should eq(5)
     end
   end
 
   describe "step 1" do
     it "has 11 cubes" do
-      space = ConwaySpace.new(".#.\n..#\n###")
+      space = ConwaySpace::Resolver(Tuple(Int32, Int32, Int32), ConwaySpace::Cube3D).new(".#.\n..#\n###")
       space.next
-      space.count_cubes.should eq(11)
+      space.cubes.size.should eq(11)
     end
   end
 end
 
-describe ConwaySpace4 do
+describe ConwaySpace do
   describe "step 0" do
     it "has 5 cubes" do
-      space = ConwaySpace4.new(".#.\n..#\n###")
-      space.count_cubes.should eq(5)
+      space = ConwaySpace::Resolver(Tuple(Int32, Int32, Int32, Int32), ConwaySpace::Cube4D).new(".#.\n..#\n###")
+      space.cubes.size.should eq(5)
     end
   end
 
-  describe "step 1", focus: true do
+  describe "step 1" do
     it "has 11 cubes" do
-      space = ConwaySpace4.new(".#.\n..#\n###")
+      space = ConwaySpace::Resolver(Tuple(Int32, Int32, Int32, Int32), ConwaySpace::Cube4D).new(".#.\n..#\n###")
       space.next
-      space.count_cubes.should eq(29)
+      space.cubes.size.should eq(29)
     end
   end
 end
