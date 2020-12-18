@@ -1,44 +1,6 @@
+require "deque"
+
 module Aoc2020
-  enum Op
-    Addition
-    Multiplication
-    Nop
-  end
-
-  class Expression
-    @op : Op
-    @a : Expression | UInt64
-    @b : Expression | UInt64 | Nil
-
-    def initialize(@op, @a, @b = nil)
-    end
-
-    def compute
-      if a = @a.as?(Expression)
-        x = a.compute
-      else
-        x = @a.as(UInt64)
-      end
-
-      if b = @b.as?(Expression)
-        y = b.compute
-      elsif b = @b.as?(UInt64)
-        y = b
-      else
-        y = nil
-      end
-
-      case @op
-      in .addition?
-        x + y.not_nil!
-      in .multiplication?
-        x * y.not_nil!
-      in .nop?
-        x
-      end
-    end
-  end
-
   def self.compute(input) : UInt64
     input.each_char.reject(' ').reduce(Array(UInt64 | Char | Nil).new) do |acc, x|
       case x.to_s
@@ -77,80 +39,136 @@ module Aoc2020
     acc
   end
 
-  def self.read_expression(input)
-    if input.size == 1
-      return Expression.new(op: Op::Nop, a: input[0].to_u64)
+  enum Operator
+    Add
+    Mult
+  end
+
+  abstract class Node
+    abstract def compute
+  end
+
+  class Operation < Node
+    property left : Node
+    property right : Node
+
+    getter op : Operator
+
+    def initialize(@op, @left, @right)
     end
 
-    parentheses = 0
-    op = Op::Multiplication
-    idx = find_index('*', input)
-    if idx.nil?
-      op = Op::Addition
-      idx = find_index('+', input)
-    end
-
-    if !idx.nil?
-      Expression.new(
-        op: op,
-        a: read_expression(fix_parentheses(0, idx - 1, input)),
-        b: read_expression(fix_parentheses(idx + 1, input.size - 1, input)),
-      )
-    else
-      raise "BUG: unreachable"
+    def compute
+      case @op
+      in .add?
+        @left.compute + @right.compute
+      in .mult?
+        @left.compute * @right.compute
+      end
     end
   end
 
-  def self.find_index(op, input)
-    acc = 0
-    min_parentheses = input[...-1].map do |c|
-      if c == '('
-        acc += 1
-        acc
-      elsif c == ')'
-        acc -= 1
-        acc
-      else
-        acc
+  class Digit < Node
+    def initialize(@value : UInt64)
+    end
+
+    def compute
+      @value
+    end
+  end
+
+  def self.read_tree(input)
+    stack = Deque(Node).new
+
+    token = input.next.as(Char)
+    case token
+    when .number?
+      stack << Digit.new(token.to_u64)
+    when '('
+      stack << read_tree(input)
+    else
+      raise "Unexpected token #{token} at the beginning of the input"
+    end
+
+    first = true
+    loop do
+      pp! stack[0]
+      token = input.next
+      if token.is_a?(Iterator::Stop)
+        break
       end
-    end.min
-    parentheses = 0
-    index = nil
-    input.each_with_index do |c, i|
-      if c == '('
-        parentheses += 1
-      elsif c == ')'
-        parentheses -= 1
-      elsif c == op
-        if parentheses == min_parentheses
-          index = i
+
+      case token
+      when '+'
+        current_node = stack.pop
+        if current_node.is_a?(Operation)
+          if first || current_node.op.add?
+            node = new_operation(Operator::Add, current_node, input)
+
+            if stack.size > 0
+              previous_node = stack.pop.as(Operation)
+              previous_node.right = node
+              stack << previous_node
+            end
+
+            stack << node
+          else
+            current_node.right = new_operation(Operator::Add, current_node.right, input)
+            stack << current_node << current_node.right
+          end
+        else
+          stack << new_operation(Operator::Add, current_node, input)
         end
+      when '*'
+        current_node = stack.pop
+        if current_node.is_a?(Operation) && current_node.op.mult?
+          current_node.right = new_operation(Operator::Mult, current_node.right, input)
+          stack << current_node << current_node.right
+        else
+          node = new_operation(Operator::Mult, current_node, input)
+
+          if stack.size > 0
+            previous_node = stack.pop.as(Operation)
+            previous_node.right = node
+            stack << previous_node
+          end
+
+          stack << node
+        end
+      when ')'
+        return stack[0]
+      else
+        raise "Unexpected token #{token}, expecting an operator or right parenthesis"
       end
+
+      first = false
     end
-    index
+
+    pp stack[0]
+    stack[0]
   end
 
-  def self.fix_parentheses(x, y, input)
-    tally = input[x..y].tally
-    lp = tally.fetch('(', 0)
-    rp = tally.fetch(')', 0)
-    if lp > rp
-      input[x + 1..y]
-    elsif lp < rp
-      input[x..y -1]
-    else
-      input[x..y]
-    end
+  def self.new_operation(op, left, input)
+    right = case token = input.next.as(Char)
+            when .number?
+              Digit.new(token.to_u64)
+            when '('
+              read_tree(input)
+            else
+              raise "Unexpected token #{token}, expecting a number or a left parenthesis"
+            end
+    Operation.new(op, left, right)
   end
 
   INPUT_DAY18 = File.read("./inputs/18.txt")
 
   def self.day18p1
-    INPUT_DAY18.each_line.map { |l| compute(l) }.sum
+    INPUT_DAY18.each_line.map { |l| compute(l.chars.reject(' ')) }.sum
   end
 
   def self.day18p2
-    INPUT_DAY18.each_line.map { |l| read_expression(l.chars.reject!(' ')).compute.as(UInt64) }.sum
+    INPUT_DAY18.each_line.map do |line|
+      read_tree(line.each_char.reject(' ')).compute.tap { |x| puts x }
+    end.sum
   end
 end
 
