@@ -1,5 +1,5 @@
 module Aoc2020
-  struct FuturRegex
+  struct FutureRegex
     def initialize(@pattern : String)
     end
 
@@ -13,7 +13,7 @@ module Aoc2020
   end
 
   struct Rules
-    @rules = Hash(Int32, String | FuturRegex).new
+    @rules = Hash(Int32, String | FutureRegex).new
 
     def initialize(input)
       input.lines.map(&.split(": ")).each do |x|
@@ -27,9 +27,9 @@ module Aoc2020
       Regex.new("^#{pattern}$")
     end
 
-    def get(index : Int32) : FuturRegex
+    def get(index : Int32) : FutureRegex
       rule = @rules[index]
-      if rule.is_a?(FuturRegex)
+      if rule.is_a?(FutureRegex)
         rule
       else
         pattern = rule.split('|').map do |group|
@@ -42,7 +42,7 @@ module Aoc2020
               "b"
             elsif c.to_i == index
               "(?&g#{index})"
-            elsif @rules[c.to_i].is_a?(FuturRegex)
+            elsif @rules[c.to_i].is_a?(FutureRegex)
               "(?&g#{c.to_i})"
             else
               get(c.to_i)
@@ -50,7 +50,7 @@ module Aoc2020
           end.join
         end.join('|')
 
-        @rules[index] = FuturRegex.new("(?<g#{index}>#{pattern})")
+        @rules[index] = FutureRegex.new("(?<g#{index}>#{pattern})")
       end
     end
 
@@ -131,6 +131,153 @@ module Aoc2020
     end
   end
 
+  struct RuleMatch
+    record GroupPointer, group : Int32, branch : Int32, index : Int32, next_groups = Array(Int32).new, success_branch = 0
+
+    abstract class Group
+    end
+
+    class OrGroup < Group
+      getter branches : Array(Array(Int32))
+
+      def initialize(@branches)
+      end
+    end
+
+    class TerminalGroup < Group
+      getter value : Char
+
+      def initialize(@value)
+      end
+    end
+
+    @groups = Hash(Int32, Group).new
+
+    def initialize(input)
+      input.each_line.map(&.split(": ")).each do |line|
+        rule, value = line
+
+        case value
+        when %("a")
+          group = TerminalGroup.new('a')
+        when %("b")
+          group = TerminalGroup.new('b')
+        else
+          branches = value.split('|').map do |branch|
+            branch.split(' ').reject("").map &.to_i
+          end
+          group = OrGroup.new(branches)
+        end
+
+        @groups[rule.to_i] = group
+      end
+
+      pp @groups
+    end
+
+    def print_stack(stack, input)
+      input.each_char { |c| print "#{c} " }
+      puts
+
+      p = stack[-1]
+
+      stack.each do |p|
+        p.index.times { print "  " }
+        printf "%2d                         #{p.branch} #{p.next_groups} ", p.group
+        group = @groups[p.group]
+        if group.is_a?(OrGroup)
+          puts group.branches
+        elsif group.is_a?(TerminalGroup)
+          puts group.value
+        end
+      end
+    end
+
+    def match(input)
+      stack = Deque(GroupPointer).new
+      stack << GroupPointer.new(0, 0, 0)
+
+      loop do
+        print_stack stack, input
+        pointer = stack.pop
+        group = @groups[pointer.group]
+
+        case group
+        when OrGroup
+          if branch = group.branches[pointer.branch]?
+            stack << pointer
+            next_group = branch[0]
+            stack << GroupPointer.new(next_group, 0, pointer.index, branch[1..])
+          else
+            if stack.size == 0
+              return false
+            end
+
+            previous_pointer = stack.pop
+            stack << GroupPointer.new(
+              previous_pointer.group,
+              previous_pointer.branch + 1,
+              previous_pointer.index,
+              previous_pointer.next_groups,
+            )
+          end
+        when TerminalGroup
+          # if pointer.index >= input.size
+          #   return false
+          # end
+
+          if input[pointer.index]? == group.value
+            if pointer.next_groups.size == 0
+              previous_pointer = nil
+              loop do
+                if stack.size == 0
+                  return true
+                end
+
+                previous_pointer = stack.pop
+                if previous_pointer.next_groups.size > 0
+                  break
+                end
+              end
+
+              if !previous_pointer.nil?
+                stack << GroupPointer.new(
+                  previous_pointer.next_groups[0],
+                  0,
+                  pointer.index + 1,
+                  previous_pointer.next_groups[1..],
+                )
+              else
+                raise "BUG: unreachable"
+              end
+            else
+              stack << GroupPointer.new(
+                pointer.next_groups[0],
+                0,
+                pointer.index + 1,
+                pointer.next_groups[1..],
+              )
+            end
+          else
+            if stack.size == 0
+              return false
+            end
+
+            previous_pointer = stack.pop
+            stack << GroupPointer.new(
+              previous_pointer.group,
+              previous_pointer.branch + 1,
+              previous_pointer.index,
+              previous_pointer.next_groups,
+            )
+          end
+        else
+          raise "BUG: unreachable"
+        end
+      end
+    end
+  end
+
   def self.count_valid(messages, rule)
     messages.each_line.count do |l|
       if rule.matches?(l)
@@ -162,13 +309,18 @@ module Aoc2020
   def self.day19p2
     rules, messages = INPUT_DAY19_P2.split("\n\n")
     # rules = Rules.new(%(0: 1 | 1 0 1\n1: "a"))
-    rules = Rules.new(rules)
+    # rules = Rules.new(rules)
     # puts rules[0]
 
     # count_valid(messages, rules[0])
-    count_valid_match(messages, rules)
+    # count_valid_match(messages, rules)
+
+    # rules = RuleMatch.new(rules)
+    r = Rules.new(rules)
+    puts r[42]
+    # messages.lines.count { |l| rules.match(l) }
   end
 end
 
 # puts Aoc2020.day19p1
-puts Aoc2020.day19p2
+# puts Aoc2020.day19p2
