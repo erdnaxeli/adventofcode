@@ -17,7 +17,8 @@ module Aoc2020
 
   struct Solver
     @ingredients = Set(String).new
-    @allergens = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
+
+    getter allergens = Hash(String, Set(String)).new { |h, k| h[k] = Set(String).new }
 
     def initialize(@foods : Array(Food))
       find_potential_allergen
@@ -48,6 +49,22 @@ module Aoc2020
         end
       end.sum
     end
+
+    def find_valid_allergen
+      done = Set(String).new
+
+      while done.size != @allergens.size
+        allergen = @allergens.keys.find do |k|
+          !done.includes?(k) && @allergens[k].size == 1
+        end.not_nil!
+        ingredient = @allergens[allergen].first
+        @allergens.reject { |k, _| k == allergen}.each do |_, ingredients|
+          ingredients.delete(ingredient)
+        end
+
+        done << allergen
+      end
+    end
   end
 
   INPUT_DAY21 = File.read("./inputs/21.txt")
@@ -58,6 +75,14 @@ module Aoc2020
     solver.find_potential_allergen
     solver.count_apparitions(solver.non_allergen)
   end
+
+  def self.day21p2
+    foods = read_input(INPUT_DAY21)
+    solver = Solver.new(foods)
+    solver.find_potential_allergen
+    solver.find_valid_allergen
+    solver.allergens.to_a.sort_by { |k, v| k }.map { |k, v| v.first }.join(',')
+  end
 end
 
-puts Aoc2020.day21p1
+# puts Aoc2020.day21p2
