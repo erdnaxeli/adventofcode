@@ -278,7 +278,7 @@ module Aoc2020
     end
   end
 
-  def self.count_valid(messages, rule)
+  def self.count_valid(messages, rule : Regex)
     messages.each_line.count do |l|
       if rule.matches?(l)
         puts l
@@ -309,18 +309,18 @@ module Aoc2020
   def self.day19p2
     rules, messages = INPUT_DAY19_P2.split("\n\n")
     # rules = Rules.new(%(0: 1 | 1 0 1\n1: "a"))
-    # rules = Rules.new(rules)
+    rules = Rules.new(rules)
     # puts rules[0]
 
-    # count_valid(messages, rules[0])
+    count_valid(messages, rules[0])
     # count_valid_match(messages, rules)
 
     # rules = RuleMatch.new(rules)
-    r = Rules.new(rules)
-    puts r[42]
+    # r = Rules.new(rules)
+    # puts r[42]
     # messages.lines.count { |l| rules.match(l) }
   end
 end
 
 # puts Aoc2020.day19p1
-# puts Aoc2020.day19p2
+puts Aoc2020.day19p2

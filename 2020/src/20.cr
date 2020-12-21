@@ -84,13 +84,13 @@ module Aoc2020
         @tiles.each do |tile|
           tile.each_position do |candidate|
             if !map_tile.taken.up? && map_tile.up == candidate.down
-              @map[{x, y + 1}] = candidate
-              to_check << {x, y + 1}
+              @map[{x, y - 1}] = candidate
+              to_check << {x, y - 1}
               map_tile.taken |= Side::Up
               candidate.taken |= Side::Down
             elsif !map_tile.taken.down? && map_tile.down == candidate.up
-              @map[{x, y - 1}] = candidate
-              to_check << {x, y - 1}
+              @map[{x, y + 1}] = candidate
+              to_check << {x, y + 1}
               map_tile.taken |= Side::Down
               candidate.taken |= Side::Up
             elsif !map_tile.taken.left? && map_tile.left == candidate.right
@@ -145,6 +145,29 @@ module Aoc2020
         @map[max].id,
       ].map &.to_u64
     end
+
+    def combine
+      min = @map.keys.min
+      max = @map.keys.max
+
+      ty_max = @map[{0, 0}].value.size
+      tx_max = @map[{0, 0}].value[0].size
+
+      value = String.build do |str|
+        (min[1]..max[1]).each do |y|
+          (1...ty_max - 1).each do |ty|
+            (min[0]..max[0]).each do |x|
+              (1...tx_max - 1).each do |tx|
+                str << @map[{x, y}].value[ty][tx]
+              end
+            end
+            str << '\n'
+          end
+        end
+      end
+
+      Tile.new(0, value.lines.map &.chars)
+    end
   end
 
   def self.read_tiles(input) : Array(Tile)
@@ -154,6 +177,28 @@ module Aoc2020
     end
   end
 
+  def self.find_sea_monster(tile)
+    count = 0
+    tile.each_position do |position|
+      (1...tile.value.size - 1).each do |y|
+          last_match = 0
+          while result = position.value[y].join.match(/#....##....##....###/, last_match)
+            last_match = result.byte_begin + 1
+
+            if position.value[y - 1][result.byte_begin...result.byte_end].join.matches?(/(.){18}#/) && position.value[y + 1][result.byte_begin...result.byte_end].join.match(/^.#..#..#..#..#..#/)
+              count += 1
+            end
+          end
+      end
+    end
+
+    if count == 0
+      raise "No sea monster found"
+    end
+
+    tile.value.map { |l| l.count('#') }.sum - (count * 15)
+  end
+
   INPUT_DAY20 = File.read("./inputs/20.txt")
 
   def self.day20p1
@@ -161,6 +206,12 @@ module Aoc2020
     image.resolve
     image.four_corners.product
   end
+
+  def self.day20p2
+    image = ImageTiles.new(read_tiles(INPUT_DAY20))
+    image.resolve
+    find_sea_monster(image.combine)
+  end
 end
 
-puts Aoc2020.day20p1
+puts Aoc2020.day20p2
