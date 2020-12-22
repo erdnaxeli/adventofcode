@@ -310,9 +310,9 @@ module Aoc2020
     rules, messages = INPUT_DAY19_P2.split("\n\n")
     # rules = Rules.new(%(0: 1 | 1 0 1\n1: "a"))
     rules = Rules.new(rules)
-    # puts rules[0]
+    rules[0]
 
-    count_valid(messages, rules[0])
+    # count_valid(messages, rules[0])
     # count_valid_match(messages, rules)
 
     # rules = RuleMatch.new(rules)
