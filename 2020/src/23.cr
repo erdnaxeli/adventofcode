@@ -7,9 +7,13 @@ module Aoc2020
     max = circle.max
 
     i = 0
+    t = Time.monotonic
     moves.times do
       i += 1
-      puts i if i % 1_000 == 0
+      if i % 10_000 == 0
+        puts "#{i} #{Time.monotonic - t}"
+        t = Time.monotonic
+      end
       circle.rotate!
       a = circle.shift
       b = circle.shift
@@ -49,7 +53,7 @@ module Aoc2020
   end
 
   def self.day23p2
-    move(INPUT_DAY23 + (INPUT_DAY23.max..1_000_000).to_a, 10_000_000).to_a.[0..1].product
+    move(INPUT_DAY23 + (INPUT_DAY23.max + 1..1_000_000).to_a, 10_000_000).to_a.[0..1].tap{ |x| puts x }.map(&.to_u64).product
   end
 end
 
