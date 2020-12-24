@@ -7,12 +7,13 @@ module Aoc2020
     max = circle.max
 
     i = 0
-    t = Time.monotonic
+    t0 = t = Time.monotonic
     moves.times do
       i += 1
-      if i % 10_000 == 0
-        puts "#{i} #{Time.monotonic - t}"
-        t = Time.monotonic
+      if i % 50_000 == 0
+        tt = Time.monotonic
+        puts "#{i} #{tt - t} #{((tt - t0) / i) * moves - (tt - t0)}"
+        t = tt
       end
       circle.rotate!
       a = circle.shift
