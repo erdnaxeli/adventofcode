@@ -8,6 +8,9 @@ module ConwaySpace
       end
     end
 
+    def initialize(@cubes)
+    end
+
     def next
       to_delete = Array(Coordinates).new
       to_add = Array(Cube).new
@@ -16,7 +19,7 @@ module ConwaySpace
       @cubes.each_value do |cube|
         valid = count_valid_around(cube)
 
-        if !(2..3).includes?(valid)
+        if Cube.dead?(valid)
           to_delete << cube.coordinates
         end
 
@@ -24,7 +27,7 @@ module ConwaySpace
           if checked.add?(neighbor.coordinates)
             valid = count_valid_around(neighbor)
 
-            if valid == 3
+            if Cube.alive?(valid)
               to_add << neighbor
             end
           end
@@ -63,7 +66,21 @@ module ConwaySpace
     end
   end
 
+  module Day17Rules
+    # From death to alive?
+    def alive?(neighbors_alive)
+      neighbors_alive == 3
+    end
+
+    # From alive to death?
+    def dead?(neighbors_alive)
+      !(2..3).includes?(neighbors_alive)
+    end
+  end
+
   struct Cube3D
+    extend Day17Rules
+
     def initialize(@x = 0, @y = 0, @z = 0)
     end
 
@@ -85,6 +102,8 @@ module ConwaySpace
   end
 
   struct Cube4D
+    extend Day17Rules
+
     def initialize(@w = 0, @x = 0, @y = 0, @z = 0)
     end
 
@@ -123,5 +142,3 @@ module Aoc2020
     resolver.cubes.size
   end
 end
-
-puts Aoc2020.day17p2
