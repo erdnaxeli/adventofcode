@@ -181,14 +181,14 @@ module Aoc2020
     count = 0
     tile.each_position do |position|
       (1...tile.value.size - 1).each do |y|
-          last_match = 0
-          while result = position.value[y].join.match(/#....##....##....###/, last_match)
-            last_match = result.byte_begin + 1
+        last_match = 0
+        while result = position.value[y].join.match(/#....##....##....###/, last_match)
+          last_match = result.byte_begin + 1
 
-            if position.value[y - 1][result.byte_begin...result.byte_end].join.matches?(/(.){18}#/) && position.value[y + 1][result.byte_begin...result.byte_end].join.match(/^.#..#..#..#..#..#/)
-              count += 1
-            end
+          if position.value[y - 1][result.byte_begin...result.byte_end].join.matches?(/(.){18}#/) && position.value[y + 1][result.byte_begin...result.byte_end].join.match(/^.#..#..#..#..#..#/)
+            count += 1
           end
+        end
       end
     end
 

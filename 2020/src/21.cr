@@ -58,7 +58,7 @@ module Aoc2020
           !done.includes?(k) && @allergens[k].size == 1
         end.not_nil!
         ingredient = @allergens[allergen].first
-        @allergens.reject { |k, _| k == allergen}.each do |_, ingredients|
+        @allergens.reject { |k, _| k == allergen }.each do |_, ingredients|
           ingredients.delete(ingredient)
         end
 

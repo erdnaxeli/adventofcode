@@ -40,7 +40,7 @@ module Aoc2020
       # sleep 100.milliseconds
 
       if card1 <= deck1.size && card2 <= deck2.size
-        result, _ = play2(deck1[...card1].dup, deck2[...card2].dup, i+1)
+        result, _ = play2(deck1[...card1].dup, deck2[...card2].dup, i + 1)
 
         if result > 0
           deck2 << card2 << card1

@@ -54,7 +54,7 @@ module Aoc2020
   end
 
   def self.day23p2
-    move(INPUT_DAY23 + (INPUT_DAY23.max + 1..1_000_000).to_a, 10_000_000).to_a.[0..1].tap{ |x| puts x }.map(&.to_u64).product
+    move(INPUT_DAY23 + (INPUT_DAY23.max + 1..1_000_000).to_a, 10_000_000).to_a.[0..1].tap { |x| puts x }.map(&.to_u64).product
   end
 end
 
