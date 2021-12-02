@@ -45,6 +45,6 @@ class Day2 extends aoc.twentyone.SimplePuzzle[List[MoveInstruction], Int]:
           case MoveInstruction(Direction.Down, c) =>
             (acc(0) + c, acc(1), acc(2))
       )
-      .toList
       .tail
+      .toList
       .product
