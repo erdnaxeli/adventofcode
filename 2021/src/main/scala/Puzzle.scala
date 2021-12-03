@@ -5,10 +5,10 @@ import scala.io.Source
 trait Puzzle[I1, I2, P1, P2]:
   protected def input1(raw: Iterator[String]): I1
   protected def input2(raw: Iterator[String]): I2
-  protected def part1(input: I1): P1
-  protected def part2(input: I2): P2
+  protected def part1(input: I1): Option[P1] = None
+  protected def part2(input: I2): Option[P2] = None
 
-  def solve(day: Int): (P1, P2) =
+  def solve(day: Int): (Option[P1], Option[P2]) =
     val r1 = Source.fromResource(f"$day%02d/p1.txt").getLines
     val r2 = Source.fromResource(f"$day%02d/p2.txt").getLines
 

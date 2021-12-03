@@ -24,27 +24,32 @@ class Day2 extends aoc.twentyone.SimplePuzzle[List[MoveInstruction], Int]:
       )
       .toList
 
-  override protected def part1(input: List[MoveInstruction]): Int =
-    input
-      .foldLeft((0, 0))((acc, mi) =>
-        mi match
-          case MoveInstruction(Direction.Forward, c) => (acc(0) + c, acc(1))
-          case MoveInstruction(Direction.Up, c)      => (acc(0), acc(1) - c)
-          case MoveInstruction(Direction.Down, c)    => (acc(0), acc(1) + c)
-      )
-      .toList
-      .product
+  override protected def part1(input: List[MoveInstruction]): Option[Int] =
+    Some(
+      input
+        .foldLeft((0, 0))((acc, mi) =>
+          mi match
+            case MoveInstruction(Direction.Forward, c) => (acc(0) + c, acc(1))
+            case MoveInstruction(Direction.Up, c)      => (acc(0), acc(1) - c)
+            case MoveInstruction(Direction.Down, c)    => (acc(0), acc(1) + c)
+        )
+        .toList
+        .product
+    )
 
-  override protected def part2(input: List[MoveInstruction]): Int =
-    input
-      .foldLeft((0, 0, 0))((acc, mi) =>
-        mi match
-          case MoveInstruction(Direction.Forward, c) =>
-            (acc(0), acc(1) + c, acc(2) + c * acc(0))
-          case MoveInstruction(Direction.Up, c) => (acc(0) - c, acc(1), acc(2))
-          case MoveInstruction(Direction.Down, c) =>
-            (acc(0) + c, acc(1), acc(2))
-      )
-      .tail
-      .toList
-      .product
+  override protected def part2(input: List[MoveInstruction]): Option[Int] =
+    Some(
+      input
+        .foldLeft((0, 0, 0))((acc, mi) =>
+          mi match
+            case MoveInstruction(Direction.Forward, c) =>
+              (acc(0), acc(1) + c, acc(2) + c * acc(0))
+            case MoveInstruction(Direction.Up, c) =>
+              (acc(0) - c, acc(1), acc(2))
+            case MoveInstruction(Direction.Down, c) =>
+              (acc(0) + c, acc(1), acc(2))
+        )
+        .tail
+        .toList
+        .product
+    )
