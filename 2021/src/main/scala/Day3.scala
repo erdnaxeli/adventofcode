@@ -36,18 +36,11 @@ class Day3 extends SimplePuzzle[List[List[Int]], Double]:
             acc :+ newInput.head.head
           )
 
-    val oxygen = findMatching(input, (x, y) => x == y).reverse
-      .tapEach(println(_))
-      .zipWithIndex
+    val oxygen = findMatching(input, (x, y) => x == y).reverse.zipWithIndex
       .map((v, i) => pow(2, i) * v)
       .sum
-    println
-    val co2Scrubber = findMatching(input, (x, y) => x != y).reverse
-      .tapEach(println(_))
-      .zipWithIndex
+    val co2Scrubber = findMatching(input, (x, y) => x != y).reverse.zipWithIndex
       .map((v, i) => pow(2, i) * v)
       .sum
-
-    println((oxygen, co2Scrubber))
 
     Some(oxygen * co2Scrubber)
