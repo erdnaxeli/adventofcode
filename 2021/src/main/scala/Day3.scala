@@ -14,7 +14,40 @@ class Day3 extends SimplePuzzle[List[List[Int]], Double]:
           acc ++ x.zipWithIndex.map((v, i) => (i, v + acc.getOrElse(i, 0)))
         )
         .map((i, v) => (i, (v.toFloat / input.size).round))
-    val leasCommonBytes = mostCommonBytes.map((i, v) => (i, (v + 1) % 2))
+    val leastCommonBytes = mostCommonBytes.map((i, v) => (i, (v + 1) % 2))
     val gamma = mostCommonBytes.map((i, v) => pow(2, i) * v).sum
-    val epsilon = leasCommonBytes.map((i, v) => pow(2, i) * v).sum
+    val epsilon = leastCommonBytes.map((i, v) => pow(2, i) * v).sum
     Some(gamma * epsilon)
+
+  override protected def part2(input: List[List[Int]]): Option[Double] =
+    def findMatching(
+        input: List[List[Int]],
+        cmp: (Int, Int) => Boolean,
+        acc: List[Int] = List[Int]()
+    ): List[Int] =
+      input match
+        case x :: Nil => acc ++ x
+        case _ =>
+          val mostCommon = (input.map(_.head).sum.toFloat / input.size).round
+          var newInput = input.filter(x => cmp(x.head, mostCommon))
+          findMatching(
+            newInput.map(_.tail),
+            cmp,
+            acc :+ newInput.head.head
+          )
+
+    val oxygen = findMatching(input, (x, y) => x == y).reverse
+      .tapEach(println(_))
+      .zipWithIndex
+      .map((v, i) => pow(2, i) * v)
+      .sum
+    println
+    val co2Scrubber = findMatching(input, (x, y) => x != y).reverse
+      .tapEach(println(_))
+      .zipWithIndex
+      .map((v, i) => pow(2, i) * v)
+      .sum
+
+    println((oxygen, co2Scrubber))
+
+    Some(oxygen * co2Scrubber)
