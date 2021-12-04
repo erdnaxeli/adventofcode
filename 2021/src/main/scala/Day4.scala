@@ -16,7 +16,38 @@ class Day4 extends SimplePuzzle[(RandomNumbers, List[Board]), Int]:
       input: (RandomNumbers, List[Board])
   ): Option[Int] =
     val (numbers, boards) = input
-    val (numbersCalled, winningBoard) = boards
+    val (numbersCalled, winningBoard) = solveBoards(boards, numbers)
+      // find the board that wins first
+      .sorted.headOption.flatten match
+      case None    => throw Exception("No wining board found")
+      case Some(x) => x
+
+    Some(computeScore(winningBoard, numbersCalled))
+
+  override protected def part2(
+      input: (RandomNumbers, List[Board])
+  ): Option[Int] =
+    val (numbers, boards) = input
+    val (numbersCalled, winningBoard) = solveBoards(boards, numbers)
+      // find the board that wins last
+      .sorted.lastOption.flatten match
+      case None    => throw Exception("No wining board found")
+      case Some(x) => x
+
+    Some(computeScore(winningBoard, numbersCalled))
+
+  private def computeScore(board: Board, numbersCalled: RandomNumbers): Int =
+    val unmarkedNumbers = board.flatten
+      .filter(x => !numbersCalled.contains(x))
+      .sum
+    val justCalledNumber = numbersCalled.lastOption.getOrElse(0)
+    unmarkedNumbers * justCalledNumber
+
+  private def solveBoards(
+      boards: List[Board],
+      numbers: RandomNumbers
+  ): List[Option[(RandomNumbers, Board)]] =
+    boards
       // get Some(solution) for each board or None
       .map(board =>
         val solutionRow = solveBoard(board, numbers)
@@ -29,18 +60,6 @@ class Day4 extends SimplePuzzle[(RandomNumbers, List[Board]), Int]:
             if x(0).size < y(0).size then Some(x)
             else Some(y)
       )
-      // find the board that wins first
-      .sorted
-      .headOption
-      .flatten match
-      case None    => throw Exception("No wining board found")
-      case Some(x) => x
-
-    val unmarkedNumbers = winningBoard.flatten
-      .filter(x => !numbersCalled.contains(x))
-      .sum
-    val justCalledNumber = numbersCalled.lastOption.getOrElse(0)
-    Some(unmarkedNumbers * justCalledNumber)
 
   private def solveBoard(
       board: Board,
