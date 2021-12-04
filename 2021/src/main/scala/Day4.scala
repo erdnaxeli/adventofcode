@@ -54,27 +54,24 @@ class Day4 extends SimplePuzzle[(RandomNumbers, List[Board]), Int]:
         val solutionColumn = solveBoard(board.transpose, numbers)
         (solutionRow, solutionColumn) match
           case (None, None)    => None
-          case (Some(x), None) => Some(x)
-          case (None, Some(y)) => Some(y)
+          case (Some(x), None) => Some(x, board)
+          case (None, Some(y)) => Some(y, board)
           case (Some(x), Some(y)) =>
-            if x(0).size < y(0).size then Some(x)
-            else Some(y)
+            if x.size < y.size then Some(x, board)
+            else Some(y, board)
       )
 
   private def solveBoard(
       board: Board,
       numbers: RandomNumbers
-  ): Option[(RandomNumbers, Board)] =
+  ): Option[RandomNumbers] =
     board
-      // remove not wining lines
-      .filter(line => line.forall(n => numbers.contains(n)))
-      // find all numbers called until the line wines
-      .map(line =>
-        (
-          numbers.take(line.map(n => numbers.indexOf(n)).max + 1),
-          board
-        )
-      )
+      .collect {
+        // filter winning lines
+        case line if line.forall(n => numbers.contains(n)) =>
+          // find all numbers called until the line wines
+          numbers.take(line.map(n => numbers.indexOf(n)).max + 1)
+      }
       // get the line that wins first
       .sorted
       .headOption
