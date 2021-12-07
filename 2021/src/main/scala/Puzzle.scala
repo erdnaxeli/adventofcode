@@ -1,6 +1,9 @@
 package aoc.twentyone
 
 import scala.io.Source
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 
 trait Puzzle[I1, I2, P1, P2]:
   protected def input1(raw: Iterator[String]): I1
@@ -9,8 +12,11 @@ trait Puzzle[I1, I2, P1, P2]:
   protected def part2(input: I2): Option[P2] = None
 
   def solve(day: Int): (Option[P1], Option[P2]) =
-    val r1 = Source.fromResource(f"$day%02d/p1.txt").getLines
-    val r2 = Source.fromResource(f"$day%02d/p2.txt").getLines
+    val (r1, r2) =
+      val it1 = Source.fromResource(f"$day%02d/p1.txt").getLines
+      Try { Source.fromResource(f"$day%02d/p2.txt").getLines } match
+        case Success(it2) => (it1, it2)
+        case Failure(_)   => it1.duplicate
 
     (part1(input1(r1)), part2(input2(r2)))
 

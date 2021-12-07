@@ -27,11 +27,7 @@ class Day3 extends SimplePuzzle[List[List[Int]], Double]:
         case Nil      => ???
         case x :: Nil => acc ++ x
         case _ =>
-          val mostCommon = input.transpose.head
-            .groupBy(identity)
-            .mapValues(_.size)
-            .maxBy(_._2)
-            ._1
+          val mostCommon = (input.map(_.head).sum.toFloat / input.size).round
           var newInput = input.filter(x => cmp(x.head, mostCommon))
           findMatching(
             newInput.map(_.tail),
