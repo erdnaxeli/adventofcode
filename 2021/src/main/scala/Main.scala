@@ -7,6 +7,7 @@ package aoc.twentyone
     3 -> Day3(),
     4 -> Day4(),
     5 -> Day5(),
-    6 -> Day6()
+    6 -> Day6(),
+    7 -> Day7()
   )
   println(days(day).solve(day))
