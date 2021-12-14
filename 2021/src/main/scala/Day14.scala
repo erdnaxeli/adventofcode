@@ -61,6 +61,9 @@ class Day14 extends SimplePuzzle[Input14, Int]:
       )
     val result =
       countCharsTemplate(template, countersInit, 40).values.toList.sorted
+
+    // Print the result because I don't want to change everything in part 1 to
+    // int.
     println(result.last - result.head)
     Some(-1)
 
@@ -80,10 +83,12 @@ class Day14 extends SimplePuzzle[Input14, Int]:
             nextCounters,
             sumMap(
               sumMap(result, nextCounters((x, y, iterations))),
+              // We count the first char.
               Map(x -> 1)
             )
           )
         )(1),
+      // Finally we count the last char which was never counted.
       Map(template.last -> 1)
     )
 
@@ -124,6 +129,8 @@ class Day14 extends SimplePuzzle[Input14, Int]:
             counters3((x, newChar, iterations - 1)),
             counters3((newChar, y, iterations - 1))
           ),
+          // We need to add newChar, with is the junction between [x, newChar] and
+          // [newChar, y].
           Map(newChar -> 1)
         )
 
