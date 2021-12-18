@@ -1,6 +1,6 @@
 package aoc.twentyone
 
-@main def run(day: Int): Unit =
+@main def run(): Unit =
   val days = Map(
     1 -> Day1(),
     2 -> Day2(),
@@ -18,6 +18,7 @@ package aoc.twentyone
     14 -> Day14(),
     15 -> Day15(),
     16 -> Day16(),
-    17 -> Day17()
+    17 -> Day17(),
+    18 -> Day18()
   )
-  println(days(day).solve(day))
+  println(days(18).solve(18))
