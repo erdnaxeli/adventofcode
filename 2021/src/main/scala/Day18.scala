@@ -35,7 +35,7 @@ enum SnailfishNumber:
         number: SnailfishNumber,
         depth: Int = 0
     ): (SnailfishNumber, Int, Int) =
-      val (newNumber, toAddLeft, toAddRight) = number match
+      number match
         case Regular(value) => (Regular(value), 0, 0)
         case Pair(Regular(left), Regular(right)) if depth >= 4 =>
           (Regular(0), left, right)
@@ -51,16 +51,12 @@ enum SnailfishNumber:
               (newNumber, 0, toAddRight)
             else (Pair(left, right), 0, 0)
 
-      if newNumber == number then
-        if depth > 0 then (number, 0, 0)
-        else
-          var newNumber = number.split
-          if newNumber == number then (newNumber, 0, 0)
-          else reduceRec(newNumber)
-      else if depth > 0 then (newNumber, toAddLeft, toAddRight)
-      else reduceRec(newNumber)
-
-    reduceRec(this)(0)
+    val newNumber = reduceRec(this)(0)
+    if newNumber == this then
+      var newNumber = this.split
+      if newNumber == this then newNumber
+      else newNumber.reduce
+    else newNumber.reduce
 
   private def addToLeft(number: SnailfishNumber, toAdd: Int): SnailfishNumber =
     if toAdd == 0 then number
