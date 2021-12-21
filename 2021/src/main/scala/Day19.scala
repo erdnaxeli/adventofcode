@@ -94,6 +94,9 @@ class Day19 extends SimplePuzzle[List[Cube], Int]:
   override protected def part1(input: List[Cube]): Option[Int] =
     Some(combine(input).size)
 
+  override protected def part2(input: List[Cube]): Option[Int] =
+    None
+
   private def combine(cubes: List[Cube]): Cube =
     @tailrec
     def combineRec(cubes: List[Cube], result: Cube): Cube =
@@ -135,11 +138,5 @@ class Day19 extends SimplePuzzle[List[Cube], Int]:
       else None
     )
 
-  @tailrec
   private def recTest[A, B](input: List[A])(f: A => Option[B]): Option[B] =
-    input match
-      case Nil => None
-      case h :: t =>
-        f(h) match
-          case x @ Some(result) => x
-          case None             => recTest(t)(f)
+    input.iterator.map(f).find(_.isDefined).flatten
