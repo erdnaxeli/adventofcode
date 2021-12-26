@@ -1,7 +1,5 @@
 package aoc.twentyone
 
-import javax.print.attribute.standard.PresentationDirection
-
 enum Direction:
   case Forward, Up, Down
 
