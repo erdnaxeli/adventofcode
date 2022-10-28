@@ -1,8 +1,10 @@
 module Main (main) where
 
 import Exercise
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
-    r <- executeStr "2"
+    args <- getArgs
+    r <- executeStr $ head args
     print r

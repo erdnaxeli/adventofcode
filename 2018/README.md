@@ -4,5 +4,5 @@
 
 ```shell
 export AOC_SESSION=<session cookie value>
-stack run
+stack run <day>
 ```
