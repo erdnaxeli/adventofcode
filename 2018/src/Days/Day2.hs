@@ -1,8 +1,8 @@
 module Days.Day2 (executeDay2) where
 
+import Data.Foldable (asum)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import Data.Foldable (asum)
 
 executeDay2 :: String -> (Int, String)
 executeDay2 input = (part1 input', part2 input')

@@ -27,6 +27,8 @@ dependencies:
 - utf8-string
 - time
 - containers
+- regex-base
+- regex-pcre
 
 ghc-options:
 - -Wall

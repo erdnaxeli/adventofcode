@@ -9,6 +9,7 @@ import qualified Data.ByteString.UTF8 as BSU
 import Data.Time.Clock (getCurrentTime)
 import Days.Day1 (executeDay1)
 import Days.Day2 (executeDay2)
+import Days.Day3 (executeDay3)
 import Network.HTTP.Client
   ( createCookieJar,
     insertCookiesIntoRequest,
@@ -53,6 +54,9 @@ execute (Exercise 1) input =
 execute (Exercise 2) input =
   let (x, y) = executeDay2 input
   in Right (show x, y)
+execute (Exercise 3) input =
+  let (x, y) = executeDay3 input
+  in Right (show x, show y)
 execute _ _ = Left "Not implemented"
 
 getInput :: Int -> IO (Either String String)

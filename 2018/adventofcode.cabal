@@ -27,6 +27,7 @@ library
   exposed-modules:
       Days.Day1
       Days.Day2
+      Days.Day3
       Exercise
       Input.Tools
   other-modules:
@@ -40,6 +41,8 @@ library
     , cookie
     , http-client
     , http-conduit
+    , regex-base
+    , regex-pcre
     , time
     , utf8-string
   default-language: Haskell2010
@@ -58,6 +61,8 @@ executable adventofcode-exe
     , cookie
     , http-client
     , http-conduit
+    , regex-base
+    , regex-pcre
     , time
     , utf8-string
   default-language: Haskell2010
@@ -77,6 +82,8 @@ test-suite adventofcode-test
     , cookie
     , http-client
     , http-conduit
+    , regex-base
+    , regex-pcre
     , time
     , utf8-string
   default-language: Haskell2010
