@@ -2258,11 +2258,6 @@ for line in INPUT.split("\n"):
     else:
         current += int(line)
 
-m1 = max(calories)
-calories.remove(m1)
-m2 = max(calories)
-calories.remove(m2)
-m3 = max(calories)
-
-print(m1)
-print(m1 + m2 + m3)
+calories.sort(reverse=True)
+print(calories[0])
+print(sum(calories[:3]))
