@@ -13,7 +13,6 @@ def round_score(m1, m2):
     return score
 
 
-
 def part1():
     score = 0
     with open("day2.txt") as file:
