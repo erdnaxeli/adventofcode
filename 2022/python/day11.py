@@ -1,6 +1,7 @@
+from copy import deepcopy
 from dataclasses import dataclass
 from collections import defaultdict
-from math import floor, prod
+from math import prod
 from typing import Callable
 
 
@@ -69,14 +70,12 @@ def part1(monkeys):
 
 def part2(monkeys):
     inspections = defaultdict(lambda: 0)
-    divider = prod(m.test_value for m in monkeys)
-    print(divider)
-
-    for _ in range(1000):
+    n = prod(m.test_value for m in monkeys)
+    for _ in range(10000):
         for idx, monkey in enumerate(monkeys):
             for item, dst in monkey.run(divide=False):
                 inspections[idx] += 1
-
+                item %= n
                 monkeys[dst].add(item)
 
     return prod(sorted(inspections.values())[-2:])
@@ -84,5 +83,5 @@ def part2(monkeys):
 
 if __name__ == "__main__":
     monkeys = read_monkeys()
-    print(part1(monkeys))
-    print(part2(monkeys))
+    print(part1(deepcopy(monkeys)))
+    print(part2(deepcopy(monkeys)))
