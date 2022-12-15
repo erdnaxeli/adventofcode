@@ -33,7 +33,7 @@ def read_reports():
             )
 
 
-def find_impossible_xs(reports, target_y, min_x=None):
+def find_impossible_xs(reports, target_y):
     line = set()
     for report in reports:
         sensor = report.sensor
@@ -50,27 +50,51 @@ def find_impossible_xs(reports, target_y, min_x=None):
 
 
 def part1(reports):
-    target_y = 2000000
+    target_y = 2_000_000
     line = find_impossible_xs(reports, target_y)
     return len(line)
 
 
 def part2(reports):
-    for target_y in range(4000001):
-        if target_y % 1 == 0:
-            print(target_y)
-        line = find_impossible_xs(reports, target_y)
-        print("?")
-        line = [x for x in line if 0 <= x <= 4000000]
-        print("!")
-        if len(line) == 4000001:
-            continue
+    lines = defaultdict(list)
+    max_coordinate = 4_000_000
 
-        print(len(line))
-        print("scream")
-        for x in range(4000001):
-            if x not in line:
-                return x * 4000000 + target_y
+    for report in reports:
+        sensor = report.sensor
+        distance = report.distance
+        for y in range(
+            max(0, sensor.y - distance),
+            min(max_coordinate + 1, sensor.y + distance + 1),
+        ):
+            dy = abs(sensor.y - y)
+            dx = distance - dy
+
+            lines[y].append(
+                (max(0, sensor.x - dx), min(max_coordinate + 1, sensor.x + dx))
+            )
+
+    # return len(lines)
+    for y in lines:
+        free = [(0, max_coordinate)]
+        for start, end in lines[y]:
+            free_new = []
+            for sf, ef in free:
+                if end < sf:
+                    free_new.append((sf, ef))
+                elif start <= sf:
+                    if end < ef:
+                        free_new.append((end + 1, ef))
+                elif ef < start:
+                    free_new.append((sf, ef))
+                elif sf < start:
+                    free_new.append((sf, start - 1))
+                    if end < ef:
+                        free_new.append((end + 1, ef))
+
+            free = free_new
+
+        if free:
+            return free[0][0] * 4_000_000 + y
 
 
 if __name__ == "__main__":
