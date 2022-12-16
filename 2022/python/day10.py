@@ -73,11 +73,11 @@ def part2(program):
     for inst in program:
         for inst_cycle in range(inst.cycles):
             cycle += 1
-            y = ((cycle - 1) // 40)
-            x = ((cycle - 1) % 40)
+            y = (cycle - 1) // 40
+            x = (cycle - 1) % 40
 
             if state["X"] - 1 <= x <= state["X"] + 1:
-                lines[y ][x] = "#"
+                lines[y][x] = "#"
             else:
                 lines[y][x] = "."
 
