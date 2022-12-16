@@ -1,7 +1,10 @@
 import re
 from dataclasses import dataclass, field, replace
+from itertools import groupby
 
-VALVE_RGX = re.compile(r"Valve (..) has flow rate=(\d+); tunnels? leads? to valves? (.*)")
+VALVE_RGX = re.compile(
+    r"Valve (..) has flow rate=(\d+); tunnels? leads? to valves? (.*)"
+)
 
 
 @dataclass
@@ -31,8 +34,19 @@ class Open(Action):
 @dataclass
 class Path:
     start: Valve
-    actions: list[Action]
+    actions: list[Action] = field(default_factory=list)
     opened: set[str] = field(default_factory=set)
+
+    @property
+    def position(self):
+        for action in reversed(self.actions):
+            match action:
+                case Move(to):
+                    return to.name
+                case _:
+                    continue
+
+        return self.start.name
 
     @property
     def pressure(self):
@@ -49,62 +63,6 @@ class Path:
                     raise ValueError("Invalid action")
 
         return pressure
-
-    def get_next_paths(self, valves):
-        match self.actions:
-            case []:
-                valve = self.start
-            case [Open()]:
-                valve = self.start
-            case [*_, Move(to)]:
-                valve = to
-            case [*_, Move(to), Open()]:
-                valve = to
-            case _:
-                raise ValueError("Invalid path")
-
-        if valve.name not in self.opened and valve.flow > 0:
-            yield replace(
-                self,
-                actions=self.actions + [Open()],
-                opened=self.opened | {valve.name},
-            )
-
-        for name in valve.tunnels_to:
-            valve = valves[name]
-            if self._move_creates_useless_loop(name):
-                # ignore this move
-                continue
-
-            yield replace(
-                self,
-                actions=self.actions + [Move(valve)],
-            )
-
-    def _move_creates_useless_loop(self, name):
-        """A useless loop is a loop while we didn't open any valve."""
-        current_valve = self.start
-        watch_for_opens = False
-        useless = False
-
-        for action in self.actions:
-            if current_valve.name == name:
-                watch_for_opens = True
-                useless = True
-                if isinstance(action, Open):
-                    # we skip the opening of the starting valve
-                    # we want to watch for opens during the loop
-                    continue
-
-            match action:
-                case Move(to):
-                    current_valve = to
-                case Open() if watch_for_opens:
-                    useless = False
-                case _:
-                    pass
-
-        return useless
 
     def __str__(self):
         return f"Path({', '.join(str(action) for action in self.actions)})"
@@ -130,34 +88,87 @@ def read_valve(line):
     return valve.name, valve
 
 
-def find_best_path(valves, paths):
-    complete_paths = []
-    # breakpoint()
-    while True:
-        # print(len(paths))
-        if paths:
-            current_path = paths.pop()
-        else:
-            break
-
-        # print(current_path)
-        if len(current_path.actions) == 30:
-            # print("found")
-            complete_paths.append(current_path)
+def compute_paths_from(valve, valves, path):
+    paths = []
+    for next_valve in valves[valve].tunnels_to:
+        if next_valve in path:
             continue
 
-        for path in current_path.get_next_paths(valves):
-            paths.append(path)
+        paths.append(path + [next_valve])
+        for p in compute_paths_from(next_valve, valves, path + [next_valve]):
+            paths.append(p)
 
-    complete_paths.sort(key=lambda p: p.pressure)
-    return complete_paths[-1]
+    shortest_paths = []
+    for valve, paths_to_valve in groupby(
+        sorted(paths, key=lambda p: p[-1]), key=lambda p: p[-1]
+    ):
+        shortest_path = sorted(paths_to_valve, key=len)[0]
+        shortest_paths.append(shortest_path)
+
+    return shortest_paths
+
+
+def compute_paths(valves):
+    valves_paths = {}
+    for valve in valves.keys():
+        paths = compute_paths_from(valve, valves, [valve])
+        valves_paths[valve] = paths
+
+    return valves_paths
 
 
 def part1(valves):
+    valves_to_valves = compute_paths(valves)
     aa = valves["AA"]
-    path = find_best_path(valves, [Path(start=aa, actions=[])])
-    print(path)
-    return path.pressure
+    paths = [Path(start=aa)]
+    best_pressure = 0
+    flows = sorted([v.flow for v in valves.values()], reverse=True)
+
+    i = 0
+    while paths:
+        i += 1
+        # print(best_pressure, len(paths))
+        path = paths.pop()
+        if len(path.actions) >= 30:
+            path.actions = path.actions[:30]
+            if path.pressure > best_pressure:
+                best_pressure = path.pressure
+                print("done", best_pressure)
+
+        actions_to_do = 30 - len(path.actions)
+        # this is an ideal case that will not append
+        # we should remove the flows already used to have a better filter
+        best_pressure_to_expect = path.pressure + sum(
+            i * f for i, f in zip(range(actions_to_do, 0, -1), flows)
+        )
+        if best_pressure_to_expect <= best_pressure:
+            continue
+
+        new_path_found = False
+        for next_path in valves_to_valves[path.position]:
+            actions = []
+            if next_path[-1] in path.opened:
+                continue
+            if valves[next_path[-1]].flow == 0:
+                continue
+
+            for valve in next_path[1:]:
+                actions.append(Move(valves[valve]))
+
+            new_path_found = True
+            actions.append(Open())
+            paths.append(
+                replace(
+                    path, actions=path.actions + actions, opened=path.opened | {valve}
+                )
+            )
+
+        if not new_path_found and path.pressure > best_pressure:
+            best_pressure = path.pressure
+            print("end", best_pressure)
+
+    print(i)
+    return best_pressure
 
 
 if __name__ == "__main__":
