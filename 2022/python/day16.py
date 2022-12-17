@@ -270,8 +270,14 @@ def part2(valves):
         if best_pressure_to_expect <= best_pressure:
             continue
 
+        run_elephant = True
+        run_myself = True
+        if path.position_elephant == path.position_myself:
+            run_elephant = len(path.actions_elephant) < len(path.actions_myself)
+            run_myself = not run_elephant
+
         new_elephant_path_found = False
-        if len(path.actions_elephant) < 26:
+        if run_elephant:
             for jump_elephant in valves_to_valves[path.position_elephant]:
                 next_path = path.next_state_elephant(
                     [valves[v] for v in jump_elephant[1:]]
@@ -283,7 +289,7 @@ def part2(valves):
                 paths.append(next_path)
 
         new_myself_path_found = False
-        if len(path.actions_myself) < 26:
+        if run_myself:
             for jump_myself in valves_to_valves[path.position_myself]:
                 next_path = path.next_state_myself([valves[v] for v in jump_myself[1:]])
                 if next_path is None:
