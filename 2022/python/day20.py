@@ -8,7 +8,7 @@ def read_encrypted_yield():
             yield int(line.strip())
 
 
-def part1(encrypted):
+def mix(encrypted):
     result = [(e, False) for e in encrypted]
     position = 0
     size = len(encrypted)
@@ -26,12 +26,22 @@ def part1(encrypted):
         if new_position <= position:
             position += 1
 
-    zero = result.index((0, True))
+    return [r[0] for r in result]
+
+
+def get_coordinates(result):
+    size = len(result)
+    zero = result.index(0)
     return (
-        result[(zero + 1000) % size][0]
-        + result[(zero + 2000) % size][0]
-        + result[(zero + 3000) % size][0]
+        result[(zero + 1000) % size]
+        + result[(zero + 2000) % size]
+        + result[(zero + 3000) % size]
     )
+
+
+def part1(encrypted):
+    result = mix(encrypted)
+    return get_coordinates(result)
 
 
 if __name__ == "__main__":
