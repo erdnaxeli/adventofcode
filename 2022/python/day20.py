@@ -21,6 +21,9 @@ def mix(encrypted):
                 break
 
         new_position = (position + e) % (size - 1)
+        if new_position == 0:
+            new_position = size
+
         result.insert(new_position, (e, True))
 
         if new_position <= position:
@@ -44,6 +47,15 @@ def part1(encrypted):
     return get_coordinates(result)
 
 
+def part2(encypted):
+    result = [e * 811589153 for e in encypted]
+    for _ in range(10):
+        result = mix(result)
+
+    return get_coordinates(result)
+
+
 if __name__ == "__main__":
     encrypted = read_encrypted()
     print(part1(encrypted))
+    print(part2(encrypted))
