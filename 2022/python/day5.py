@@ -1,7 +1,6 @@
 from collections import namedtuple
 from copy import deepcopy
 
-
 Instruction = namedtuple("Instruction", ["count", "src", "dst"])
 
 

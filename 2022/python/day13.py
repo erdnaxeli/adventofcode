@@ -1,5 +1,5 @@
 from functools import cmp_to_key
-from itertools import zip_longest, chain
+from itertools import chain, zip_longest
 
 
 def read_pairs():

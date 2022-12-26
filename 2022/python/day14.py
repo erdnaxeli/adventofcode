@@ -1,4 +1,4 @@
-from collections import namedtuple, defaultdict
+from collections import defaultdict, namedtuple
 from functools import cached_property
 from itertools import pairwise
 from math import copysign

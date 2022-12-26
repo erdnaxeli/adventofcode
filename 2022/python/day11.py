@@ -1,6 +1,6 @@
+from collections import defaultdict
 from copy import deepcopy
 from dataclasses import dataclass
-from collections import defaultdict
 from math import prod
 from typing import Callable
 

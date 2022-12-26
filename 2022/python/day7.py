@@ -1,9 +1,10 @@
 from __future__ import annotations
+
+import sys
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from functools import cached_property
 from itertools import chain
-import sys
 
 
 @dataclass

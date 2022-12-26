@@ -1,6 +1,5 @@
 from itertools import islice
 
-
 PRIORITIES = "abcdefghijklmnopqrstuvwyxzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 

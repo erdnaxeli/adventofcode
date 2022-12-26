@@ -4,7 +4,6 @@ from itertools import cycle
 
 from tqdm import tqdm
 
-
 Point = namedtuple("Point", ("x", "y"))
 
 

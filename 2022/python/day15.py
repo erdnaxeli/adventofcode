@@ -1,8 +1,7 @@
+import re
 from collections import defaultdict, namedtuple
 from dataclasses import dataclass
-import re
 from functools import cached_property
-
 
 Point = namedtuple("Point", ("x", "y"))
 
