@@ -15,13 +15,13 @@ class PointType(Enum):
 
 
 @dataclass(frozen=True)
-class Point:
+class State:
     x: int
     y: int
-    blizzards_up: frozenset[tuple[int, int]]
-    blizzards_right: frozenset[tuple[int, int]]
-    blizzards_down: frozenset[tuple[int, int]]
-    blizzards_left: frozenset[tuple[int, int]]
+    blizzards_up: set[tuple[int, int]]
+    blizzards_right: set[tuple[int, int]]
+    blizzards_down: set[tuple[int, int]]
+    blizzards_left: set[tuple[int, int]]
 
 
 @dataclass
@@ -32,37 +32,65 @@ class Map:
     blizzards_left: set[tuple[int, int]]
     max_x: int
     max_y: int
-    start: tuple[int, int]
+    start: tuple[int, int, int]
     end: tuple[int, int]
 
-    def available_points(self, point):
-        point = self._move_blizzards(point)
+    def __post_init__(self):
+        state = self._generate_state(self.start[0], self.start[1])
+        self._cycles = [
+            (
+                state.blizzards_up,
+                state.blizzards_right,
+                state.blizzards_down,
+                state.blizzards_left,
+            )
+        ]
+        next_state = self._move_blizzards(state)
+        cycles = 1
+        while next_state != state:
+            self._cycles.append(
+                (
+                    next_state.blizzards_up,
+                    next_state.blizzards_right,
+                    next_state.blizzards_down,
+                    next_state.blizzards_left,
+                )
+            )
+            next_state = self._move_blizzards(next_state)
+            cycles += 1
+
+        self._blizzards_cycle_steps = cycles
+        print(cycles)
+
+    def available_points(self, path):
+        x, y, cycle = path[-1]
+        state = State(
+            x,
+            y,
+            self._cycles[(cycle + 1) % len(self._cycles)][0],
+            self._cycles[(cycle + 1) % len(self._cycles)][1],
+            self._cycles[(cycle + 1) % len(self._cycles)][2],
+            self._cycles[(cycle + 1) % len(self._cycles)][3],
+        )
         for x, y in (
-            (point.x, point.y),
-            (point.x, point.y - 1),
-            (point.x + 1, point.y),
-            (point.x, point.y + 1),
-            (point.x - 1, point.y),
+            (state.x, state.y),
+            (state.x, state.y - 1),
+            (state.x + 1, state.y),
+            (state.x, state.y + 1),
+            (state.x - 1, state.y),
         ):
-            if not self._is_free(x, y, point):
+            if not self._is_free(x, y, state):
                 continue
 
-            if (point.x, point.y) != self.start and (x, y) == self.start:
-                # we don't want to return to the start, even if the blizzards
-                # positions have changed
-                continue
-
-            yield self._generate_point(x, y, point)
-
-    def get_start(self):
-        return self._generate_point(self.start[0], self.start[1])
+            yield x, y, (cycle + 1) % len(self._cycles)
 
     def is_end(self, point):
-        return (point.x, point.y) == self.end
+        x, y, _ = point
+        return (x, y) == self.end
 
     def evaluate_best_cost(self, path):
-        point = path[-1]
-        distance_to_end = abs(point.x - self.end[0]) + abs(point.y - self.end[1])
+        x, y, _ = path[-1]
+        distance_to_end = abs(x - self.end[0]) + abs(y - self.end[1])
         return len(path) + distance_to_end
 
     def print_path(self, path):
@@ -74,7 +102,7 @@ class Map:
         for y in range(0, self.max_y + 1):
             print("  " * i, end="")
             for x in range(0, self.max_x + 1):
-                if x == point.x and y == point.y:
+                if x == point[0] and y == point[1]:
                     print("@", end="")
                 elif (y == 0 or y == self.max_y) and (x, y) not in (
                     self.start,
@@ -83,13 +111,13 @@ class Map:
                     print("#", end="")
                 elif x == 0 or x == self.max_x:
                     print("#", end="")
-                elif (x, y) in point.blizzards_up:
+                elif (x, y) in self._cycles[point[2] % len(self._cycles)][0]:
                     print("^", end="")
-                elif (x, y) in point.blizzards_right:
+                elif (x, y) in self._cycles[point[2] % len(self._cycles)][1]:
                     print(">", end="")
-                elif (x, y) in point.blizzards_down:
+                elif (x, y) in self._cycles[point[2] % len(self._cycles)][2]:
                     print("v", end="")
-                elif (x, y) in point.blizzards_left:
+                elif (x, y) in self._cycles[point[2] % len(self._cycles)][3]:
                     print("<", end="")
                 else:
                     print(".", end="")
@@ -100,7 +128,7 @@ class Map:
         return not self._is_wall(x, y) and not self._is_blizzard(x, y, point)
 
     def _is_wall(self, x, y):
-        return (x, y) not in (self.start, self.end) and (
+        return (x, y) not in ((self.start[0], self.start[1]), self.end) and (
             x <= 0 or y <= 0 or x >= self.max_x or y >= self.max_y
         )
 
@@ -115,17 +143,14 @@ class Map:
             | point.blizzards_left
         )
 
-    def _generate_point(self, x, y, point=None):
-        if point is None:
-            point = self
-
-        return Point(
+    def _generate_state(self, x, y):
+        return State(
             x,
             y,
-            point.blizzards_up,
-            point.blizzards_right,
-            point.blizzards_down,
-            point.blizzards_left,
+            self.blizzards_up,
+            self.blizzards_right,
+            self.blizzards_down,
+            self.blizzards_left,
         )
 
     def _move_blizzards(self, point):
@@ -134,7 +159,7 @@ class Map:
         bd = self._move_blizzards_down(point)
         bl = self._move_blizzards_left(point)
 
-        return Point(point.x, point.y, bu, br, bd, bl)
+        return State(point.x, point.y, bu, br, bd, bl)
 
     def _move_blizzards_up(self, point):
         return frozenset(
@@ -144,10 +169,14 @@ class Map:
         )
 
     def _move_blizzards_right(self, point):
-        return frozenset(self._move_blizzards_in_direction(point.blizzards_right, dx=1, rx=1))
+        return frozenset(
+            self._move_blizzards_in_direction(point.blizzards_right, dx=1, rx=1)
+        )
 
     def _move_blizzards_down(self, point):
-        return frozenset(self._move_blizzards_in_direction(point.blizzards_down, dy=1, ry=1))
+        return frozenset(
+            self._move_blizzards_in_direction(point.blizzards_down, dy=1, ry=1)
+        )
 
     def _move_blizzards_left(self, point):
         return frozenset(
@@ -174,9 +203,9 @@ class PathFinder:
         self.map = map
 
     def find(self):
-        min_len = None
-        paths = [[self.map.get_start()]]
-        lenghts = {}
+        best_path = None
+        paths = [[self.map.start]]
+        lengths = {}
         i = 0
         while paths:
             i += 1
@@ -185,25 +214,26 @@ class PathFinder:
                 print(i, len(paths), len(path))
 
             if self.map.is_end(path[-1]):
-                if min_len is None or len(path) < min_len:
-                    min_len = len(path)
-                    self.map.print_path(path)
+                if best_path is None or len(path) < len(best_path):
+                    best_path = path
 
                 continue
 
-            if min_len is not None and self.map.evaluate_best_cost(path) > min_len:
+            if best_path is not None and self.map.evaluate_best_cost(
+                path
+            ) > self.map.evaluate_best_cost(best_path):
                 continue
 
-            for point in self.map.available_points(path[-1]):
-                if point in lenghts and lenghts[point] <= len(path) + 1:
+            for point in self.map.available_points(path):
+                if point in lengths and lengths[point] <= len(path) + 1:
                     continue
 
                 paths.append(path + [point])
-                lenghts[point] = len(path) + 1
+                lengths[point] = len(path) + 1
 
             paths.sort(key=lambda p: self.map.evaluate_best_cost(p), reverse=True)
 
-        return min_len - 1
+        return best_path
 
 
 def read_map():
@@ -221,14 +251,29 @@ def read_map():
                     case "<":
                         bl.add((x, y))
 
-    return Map(bu, br, bd, bl, x, y, (1, 0), (x - 1, y))
+    return Map(bu, br, bd, bl, x, y, (1, 0, 0), (x - 1, y))
 
 
 def part1(map):
     pf = PathFinder(map)
-    return pf.find()
+    return len(pf.find()) - 1
+
+
+def part2(map):
+    pf = PathFinder(map)
+    path1 = pf.find()
+
+    map.start = path1[-1]
+    map.end = (path1[0][0], path1[0][1])
+    path2 = pf.find()
+
+    map.start = path2[-1]
+    map.end = (path2[0][0], path2[0][1])
+    path3 = pf.find()
+    return len(path1) - 1 + len(path2) - 1 + len(path3) - 1
 
 
 if __name__ == "__main__":
     map = read_map()
     print(part1(map))
+    print(part2(map))
