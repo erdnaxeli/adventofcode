@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from random import randint
+
+from path_finder import PathFinder
 
 
 class PointType(Enum):
@@ -22,6 +23,12 @@ class State:
     blizzards_right: set[tuple[int, int]]
     blizzards_down: set[tuple[int, int]]
     blizzards_left: set[tuple[int, int]]
+
+
+class Path(list):
+    @property
+    def current_state(self):
+        return self[-1]
 
 
 @dataclass
@@ -60,9 +67,8 @@ class Map:
             cycles += 1
 
         self._blizzards_cycle_steps = cycles
-        print(cycles)
 
-    def available_points(self, path):
+    def available_paths(self, path):
         x, y, cycle = path[-1]
         state = State(
             x,
@@ -82,10 +88,13 @@ class Map:
             if not self._is_free(x, y, state):
                 continue
 
-            yield x, y, (cycle + 1) % len(self._cycles)
+            yield Path(path + [(x, y, (cycle + 1) % len(self._cycles))])
 
-    def is_end(self, point):
-        x, y, _ = point
+    def get_start(self):
+        return Path([self.start])
+
+    def is_done(self, path):
+        x, y, _ = path.current_state
         return (x, y) == self.end
 
     def evaluate_best_cost(self, path):
@@ -196,44 +205,6 @@ class Map:
                     yy = ry
 
             yield xx, yy
-
-
-class PathFinder:
-    def __init__(self, map):
-        self.map = map
-
-    def find(self):
-        best_path = None
-        paths = [[self.map.start]]
-        lengths = {}
-        i = 0
-        while paths:
-            i += 1
-            path = paths.pop()
-            if randint(1, 1000) == 1:
-                print(i, len(paths), len(path))
-
-            if self.map.is_end(path[-1]):
-                if best_path is None or len(path) < len(best_path):
-                    best_path = path
-
-                continue
-
-            if best_path is not None and self.map.evaluate_best_cost(
-                path
-            ) > self.map.evaluate_best_cost(best_path):
-                continue
-
-            for point in self.map.available_points(path):
-                if point in lengths and lengths[point] <= len(path) + 1:
-                    continue
-
-                paths.append(path + [point])
-                lengths[point] = len(path) + 1
-
-            paths.sort(key=lambda p: self.map.evaluate_best_cost(p), reverse=True)
-
-        return best_path
 
 
 def read_map():
