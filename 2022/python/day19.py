@@ -1,8 +1,10 @@
+from __future__ import annotations
 import re
-from collections import defaultdict
+from collections.abc import Iterator
 from dataclasses import dataclass
-from enum import Enum
-from math import factorial
+from enum import Enum, auto
+
+from path_finder import PathFinder
 
 ROBOT_RGX = re.compile(r"Each ([a-z]*) robot costs ((?:\d+ [a-z]*(?: and )?)+)")
 
@@ -16,115 +18,7 @@ class Material(Enum):
 
 @dataclass
 class Blueprint:
-    robots: dict[Material, dict[Material, int]]
-
-
-class BlueprintState:
-    def __init__(
-        self,
-        blueprint,
-        materials=None,
-        robots=None,
-        tick=0,
-        target=None,
-        building_robot=None,
-    ):
-        self.blueprint = blueprint
-        self.materials = materials or {material: 0 for material in Material}
-        self.robots = robots or defaultdict(lambda: 0, {Material.ORE: 1})
-        self.tick = tick
-        self.target = target
-        self.building_robot = building_robot
-
-    def next_states(self):
-        if self.target is None:
-            # If the current state does not have a target, we return states at
-            # the same tick but with a target.
-            cant = []
-            can = []
-            for material, robot in self.blueprint.robots.items():
-                robots_to_consider = self.robots.copy()
-                if self.building_robot:
-                    robots_to_consider[self.building_robot] += 1
-
-                if any(robots_to_consider[needed] == 0 for needed in robot):
-                    # we don't have the robots to produce the needed ressources
-                    cant.append(material.name)
-                    continue
-
-                if self._can_buy(robot):
-                    # If we can buy a robot when we just bought another, it means
-                    # we could have bought this one first and still bought the
-                    # other.
-                    # The paths are symmetric, so we skip this one.
-                    can.append(material.name)
-                    continue
-
-                yield BlueprintState(
-                    blueprint=self.blueprint,
-                    materials=self.materials,
-                    robots=self.robots,
-                    tick=self.tick,
-                    target=(material, robot),
-                    building_robot=self.building_robot,
-                )
-
-            # if cant or can:
-            #     print(" " * self.tick, cant, can)
-        else:
-            # The state has a target.
-            material_produced, robot = self.target
-            if not self.building_robot and self._can_buy(robot):
-                # If a robot is not building already, try to build the target.
-                # print(
-                #     "." * self.tick,
-                #     self.tick + 1,
-                #     self.target[0].name,
-                #     {k.name: v for k, v in self.materials.items()},
-                # )
-                yield BlueprintState(
-                    blueprint=self.blueprint,
-                    materials={
-                        material: self.materials[material] - robot.get(material, 0)
-                        for material in self.materials
-                    },
-                    robots=self.robots,
-                    tick=self.tick,
-                    target=None,
-                    building_robot=material_produced,
-                )
-            else:
-                next_materials = {
-                    material: self.materials[material] + self.robots[material]
-                    for material in Material
-                }
-                yield BlueprintState(
-                    blueprint=self.blueprint,
-                    materials=next_materials,
-                    robots={
-                        robot: self.robots[robot] + (robot == self.building_robot)
-                        for robot in self.robots
-                    },
-                    tick=self.tick + 1,
-                    target=self.target,
-                    building_robot=None,
-                )
-
-    def _can_buy(self, robot):
-        return all(
-            self.materials[material] >= quantity for material, quantity in robot.items()
-        )
-
-    def __repr__(self):
-        return (
-            "BlueprintState(materials="
-            f"{ {k.name: v for k, v in self.materials.items() if v != 0} }, "
-            f"robots={ {k.name: v for k, v in self.robots.items() if v != 0} }, "
-            f"tick={self.tick}, "
-            f"target={self.target[0].name if self.target else None}, "
-            f"building={self.building_robot.name if self.building_robot else None}"
-            ")"
-        )
+    robots: dict[Action, dict[Material, int]]
 
 
 def read_blueprints():
@@ -136,7 +30,7 @@ def read_blueprints():
                 ressources = {}
                 for result in ressources_str.split(" and "):
                     quantity, ressource_name = result.split(" ")
-                    ressources[Material(ressource_name)] = int(quantity)
+                    ressources[Action(ressource_name)] = int(quantity)
 
                 robots[Material(name)] = ressources
 
@@ -145,45 +39,103 @@ def read_blueprints():
     return blueprints
 
 
-def worth_exploring(quality_level, state):
-    best_quality_level_expected = state.materials[Material.GEODE] + sum(
-        range(
-            state.robots[Material.GEODE],
-            (24 - state.tick) + state.robots[Material.GEODE],
-        )
-    )
-    return best_quality_level_expected > quality_level
+class Action(Enum):
+    ORE_ROBOT = "ore"
+    CLAY_ROBOT = "clay"
+    OBSIDIAN_ROBOT = "obsidian"
+    GEODE_ROBOT = "geode"
+    WAIT = auto()
+
+    def to_material(self) -> Material:
+        return Material(self.value)
+
+
+class BlueprintState:
+    def __init__(self, actions: list[Action], blueprint: Blueprint):
+        self.actions = actions
+        self.blueprint = blueprint
+        self.final_state = self._compute_final_state(actions)
+
+    def __len__(self):
+        return len(self.actions)
+
+    @property
+    def geodes(self) -> int:
+        return self.final_state[Material.GEODE]
+
+    @property
+    def current_state(self):
+        ...
+
+    def next_states(self) -> Iterator[BlueprintState]:
+        for robot in self.blueprint.robots:
+            if self._can_buy(robot):
+                yield BlueprintState(self.actions + [robot], self.blueprint)
+
+            yield BlueprintState(self.actions + [Action.WAIT], self.blueprint)
+
+    def _can_buy(self, robot: Material) -> bool:
+        for m, v in self.blueprint.robots[robot].items():
+            if self.final_state[m.to_material()] < v:
+                return False
+
+        return True
+
+    def _compute_final_state(self, actions) -> dict[Material, int]:
+        state = {r: 0 for r in Material}
+        robots = {r: 0 for r in Material}
+        robots[Material.ORE] = 1
+        for action in actions:
+            match action:
+                case Action.ORE_ROBOT:
+                    robots[Material.ORE] += 1
+                    self._buy(Material.ORE, state)
+                case Action.CLAY_ROBOT:
+                    robots[Material.CLAY] += 1
+                    self._buy(Material.CLAY, state)
+                case Action.OBSIDIAN_ROBOT:
+                    robots[Material.OBSIDIAN] += 1
+                    self._buy(Material.OBSIDIAN, state)
+                case Action.GEODE_ROBOT:
+                    robots[Material.GEODE] += 1
+                    self._buy(Material.GEODE, state)
+                case Action.WAIT:
+                    pass
+
+            for r, v in robots.items():
+                state[r] += v
+
+        return state
+
+    def _buy(self, material: Material, state: dict[Material, int]) -> None:
+        for m, v in self.blueprint.robots[material].items():
+            state[m] -= v
+
+
+class BlueprintExecutor:
+    def __init__(self, blueprint: list[Blueprint]):
+        self.blueprint = blueprint
+
+    def get_start(self) -> BlueprintState:
+        return BlueprintState([], self.blueprint)
+
+    def is_done(self, path: BlueprintState):
+        return len(path) == 24
+
+    def available_paths(self, path: BlueprintState) -> Iterator[Blueprint]:
+        yield from path.next_states()
+
+
+def get_quality_level(bluprint_id, blueprint):
+    map = BlueprintExecutor(blueprint)
+    pf = PathFinder(map)
+    geodes = pf.find().geodes
+    return bluprint_id * geodes
 
 
 def part1(blueprints):
-    quality_levels = []
-    for blueprint in blueprints:
-        print(blueprint)
-        quality_level = 0
-        states = [BlueprintState(blueprint)]
-        while states:
-            # print(len(states))
-            state = states.pop()
-            if state.tick == 24:
-                if state.materials[Material.GEODE] > quality_level:
-                    quality_level = state.materials[Material.GEODE]
-                    print(quality_level)
-
-                continue
-
-            if not worth_exploring(quality_level, state):
-                # print("drop", state.tick)
-                continue
-
-            n = list(state.next_states())
-            states.extend(n)
-
-        quality_levels.append(quality_level)
-
-    print(list(enumerate(quality_levels)))
-    return sum(
-        (i + 1) * quality_level for i, quality_level in enumerate(quality_levels)
-    )
+    quality_levels = [get_quality_level(i, b) for i, b in enumerate(blueprints)]
+    return sum(quality_levels)
 
 
 if __name__ == "__main__":
