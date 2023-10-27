@@ -2,18 +2,27 @@ package main
 
 import (
 	_ "embed"
+	"errors"
 	"fmt"
+	"html/template"
 	"log"
 	"os"
-	"text/template"
+	"os/exec"
 	"time"
 )
+
+//go:embed go.mod.tmpl
+var GO_MOD_TMPL string
 
 //go:embed main.go.tmpl
 var MAIN_TMPL string
 
 //go:embed day.go.tmpl
 var DAY_TMPL string
+
+type goModConfig struct {
+	Module string
+}
 
 type mainConfig struct {
 	Year int
@@ -24,37 +33,36 @@ type dayConfig struct {
 }
 
 func main() {
-	mainFile, err := os.Create("main.go")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer mainFile.Close()
-
-	mainTmpl, err := template.New("main.go").Parse(MAIN_TMPL)
-	if err != nil {
-		log.Fatal(err)
+	if len(os.Args) != 2 {
+		log.Fatalf("It must be used like this: %s module-name", os.Args[0])
 	}
 
-	err = mainTmpl.Execute(mainFile, mainConfig{Year: time.Now().Year()})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	dayTmpl, err := template.New("day.go").Parse(DAY_TMPL)
-	if err != nil {
-		log.Fatal(err)
-	}
+	runTemplate("go.mod", GO_MOD_TMPL, goModConfig{os.Args[1]})
+	runTemplate("main.go", MAIN_TMPL, mainConfig{Year: time.Now().Year()})
 
 	for day := 1; day <= 25; day++ {
-		dayFile, err := os.Create(fmt.Sprintf("day%02d.go", day))
-		if err != nil {
-			log.Fatal(err)
-		}
+		runTemplate(fmt.Sprintf("day%02d.go", day), DAY_TMPL, dayConfig{Day: day})
+	}
+}
 
-		defer dayFile.Close()
-		err = dayTmpl.Execute(dayFile, dayConfig{Day: day})
-		if err != nil {
-			log.Fatal(err)
-		}
+func runTemplate(filename string, tmplContent string, data any) {
+	_, err := os.Stat(filename)
+	if !errors.Is(err, os.ErrNotExist) {
+		log.Fatalf("File %s already exist, stopping here to avoid erasing anything.", filename)
+	}
+
+	file, err := os.Create(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	tmpl, _ := template.New(filename).Parse(tmplContent)
+	_ = tmpl.Execute(file, data)
+
+	cmd := exec.Command("go", "mod", "tidy")
+	err = cmd.Run()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
