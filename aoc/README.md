@@ -8,14 +8,14 @@ and a library to ease the solution writing.
 ### Installation
 
 ```shell
-$ go install github.com/erdnaxeli/adventofcode/aoc/cmd/aoc
+$ go install github.com/erdnaxeli/adventofcode/aoc/cmd/aoc@latest
 ```
 
 ### Creating a new project
 
 ```
 $ mkdir adventofcode2023
-$ aoc
+$ aoc github.com/<username>/adventofcode2023
 ```
 
 This command will generate the boilerplate for a project in the current directory.
