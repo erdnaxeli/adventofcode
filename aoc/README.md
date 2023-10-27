@@ -52,7 +52,8 @@ The `Runner` object wants a type implementing the `Solver` interface. This inter
 defines methods `dayXpY()` for each day and each part.
 
 Every method `dayXpY()` takes a single parameter `input Input` which is the puzzle input.
-The type `Input` provides many method to parse the input. See the [type documentation]
+The type `Input` provides many method to parse the input. See the
+[type documentation](https://pkg.go.dev/github.com/erdnaxeli/adventofcode/aoc#Input)
 for more details.
 
 Every method must return a single string. If the string is empty, the `Runner` assumes
