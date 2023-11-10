@@ -3,7 +3,6 @@ package aoc
 import (
 	"log"
 	"os"
-	"strconv"
 )
 
 // An object implementing the solutions for all days.
@@ -65,6 +64,7 @@ type Solver interface {
 }
 
 type Runner struct {
+	cache     Cache
 	client    Client
 	solver    Solver
 	daysParts [][]func(Input) string
@@ -86,8 +86,11 @@ func NewDefaultRunner(year int, solver Solver) Runner {
 		log.Fatal(err)
 	}
 
+	cache := NewDefaultCache()
+
 	return NewRunner(
 		year,
+		cache,
 		client,
 		solver,
 	)
@@ -97,8 +100,9 @@ func NewDefaultRunner(year int, solver Solver) Runner {
 //
 // Unless you want to inject specific implementation for the cache and the client
 // you should use NewDefaultRunner.
-func NewRunner(year int, client Client, solver Solver) Runner {
+func NewRunner(year int, cache Cache, client Client, solver Solver) Runner {
 	return Runner{
+		cache:  cache,
 		client: client,
 		solver: solver,
 		daysParts: [][]func(Input) string{
@@ -142,29 +146,31 @@ func (r Runner) RunCli() {
 		log.Fatal("It expects two arguments: day and part.")
 	}
 
-	day := parseInt(os.Args[1])
-	part := parseInt(os.Args[2])
+	day := Atoi(os.Args[1])
+	part := Atoi(os.Args[2])
 	r.Run(day, part)
 }
 
 // Run runs the solution for a given day and part
 func (r Runner) Run(day int, part int) {
-	if day <= 0 || day > 25 {
+	if day < 1 || day > 25 {
 		log.Fatal("Invalid day")
 	}
 
-	if part <= 0 || part > 2 {
+	if part < 1 || part > 2 {
 		log.Fatal("Invalid part")
 	}
 
 	log.Printf("Running day %d, part %d", day, part)
 
-	input := r.client.GetInput(r.year, day, part)
-	solution := r.daysParts[day][part](input)
+	input := r.getInput(day, part)
+
+	solution := r.daysParts[day-1][part-1](input)
 	if solution == "" {
 		log.Fatalf("Day %d part %d is not implemented", day, part)
 	}
 
+	log.Printf("Got solution: %s", solution)
 	err := r.client.SendSolution(r.year, day, part, solution)
 	if err != nil {
 		log.Fatal(err)
@@ -173,11 +179,22 @@ func (r Runner) Run(day int, part int) {
 	log.Print("Success!")
 }
 
-func parseInt(s string) int {
-	i64, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
+func (r Runner) getInput(day int, part int) Input {
+	input := r.cache.GetInput(r.year, day, part)
+	if input.content != "" {
+		return input
 	}
 
-	return int(i64)
+	input, err := r.client.GetInput(r.year, day, part)
+	if err != nil {
+		log.Print("Error while getting input.")
+		log.Fatal(err)
+	}
+
+	err = r.cache.StoreInput(r.year, day, part, input)
+	if err != nil {
+		log.Printf("Unable to save input to cache: %s", err)
+	}
+
+	return input
 }

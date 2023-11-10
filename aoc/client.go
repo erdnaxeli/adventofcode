@@ -1,6 +1,8 @@
 package aoc
 
 import (
+	"fmt"
+	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -10,7 +12,7 @@ import (
 )
 
 type Client interface {
-	GetInput(year int, day int, part int) Input
+	GetInput(year int, day int, part int) (Input, error)
 	SendSolution(year int, day int, part int, solution string) error
 }
 
@@ -46,8 +48,20 @@ func NewDefaultClient(session string) (DefaultClient, error) {
 	}, nil
 }
 
-func (c DefaultClient) GetInput(year int, day int, part int) Input {
-	return NewInput("")
+func (c DefaultClient) GetInput(year int, day int, part int) (Input, error) {
+	url := fmt.Sprintf("%s/%d/day/%d/input", URL, year, day)
+	resp, err := c.client.Get(url)
+	if err != nil {
+		return Input{}, err
+	}
+	defer resp.Body.Close()
+
+	bytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return Input{}, err
+	}
+
+	return NewInput(string(bytes)), nil
 }
 
 func (c DefaultClient) SendSolution(year int, day int, part int, solution string) error {
