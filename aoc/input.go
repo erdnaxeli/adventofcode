@@ -41,8 +41,14 @@ func (i Input) ToIntSlice() []int {
 	return result
 }
 
-func (i Input) ToStringSlice() []string {
-	return strings.Split(i.content, i.getDelimiter())
+func (i Input) ToStringSlice() []String {
+	lines := strings.Split(i.content, i.getDelimiter())
+	var trimmedLines []String
+	for _, line := range lines {
+		trimmedLines = append(trimmedLines, String(strings.TrimSpace(line)))
+	}
+
+	return trimmedLines
 }
 
 func (i Input) getDelimiter() string {
