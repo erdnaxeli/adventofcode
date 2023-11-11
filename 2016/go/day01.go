@@ -8,7 +8,7 @@ func (s solver) Day1p1(input aoc.Input) string {
 	position := aoc.Point{}
 	direction := aoc.Point{0, 1, 0}
 	for _, elt := range input.SingleLine().ToStringSlice() {
-		d, n := elt[0], aoc.Atoi(elt[1:])
+		d, n := elt.At(0), elt.From(1).Atoi()
 		switch d {
 		case 'R':
 			direction = direction.RotateRightZ()
@@ -28,7 +28,7 @@ func (s solver) Day1p2(input aoc.Input) string {
 	positions[position] = true
 	direction := aoc.Point{0, 1, 0}
 	for _, elt := range input.SingleLine().ToStringSlice() {
-		d, n := elt[0], aoc.Atoi(elt[1:])
+		d, n := elt.At(0), elt.From(1).Atoi()
 		switch d {
 		case 'R':
 			direction = direction.RotateRightZ()
