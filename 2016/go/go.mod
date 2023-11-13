@@ -5,7 +5,7 @@ go 1.19
 // replace github.com/erdnaxeli/adventofcode/aoc => /home/erdnaxeli/Workspace/personnel/adventofcode/aoc
 
 require (
-	github.com/erdnaxeli/adventofcode/aoc v0.2.0
+	github.com/erdnaxeli/adventofcode/aoc v0.4.0
 	github.com/stretchr/testify v1.8.4
 )
 
