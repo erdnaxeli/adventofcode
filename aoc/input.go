@@ -27,6 +27,27 @@ func (i Input) Delimiter(d string) Input {
 	return i
 }
 
+func (i Input) Rotate() []String {
+	lines := i.ToStringSlice()
+	tmp := make([][]rune, len(lines[0]))
+	for i := range tmp {
+		tmp[i] = make([]rune, len(lines))
+	}
+
+	for i, line := range lines {
+		for j, c := range line {
+			tmp[j][i] = c
+		}
+	}
+
+	var result []String
+	for _, line := range tmp {
+		result = append(result, String(line))
+	}
+
+	return result
+}
+
 func (i Input) SingleLine() Input {
 	i.multiline = false
 	return i

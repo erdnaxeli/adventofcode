@@ -3,6 +3,7 @@ package aoc
 import (
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 type String string
@@ -34,10 +35,20 @@ func (s String) Split() []String {
 
 	return result
 }
+
 func (s String) SplitAtoi() []int {
 	var result []int
 	for _, p := range s.Split() {
 		result = append(result, p.Atoi())
+	}
+
+	return result
+}
+
+func (s String) SplitOn(d string) []String {
+	var result []String
+	for _, p := range strings.Split(string(s), d) {
+		result = append(result, String(p))
 	}
 
 	return result
