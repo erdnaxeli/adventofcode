@@ -1,11 +1,7 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/erdnaxeli/adventofcode/aoc v0.2.0 h1:UUGDZBqkN0qMangZhWqdsGKnMsjZJdS1/fQSqUQShog=
-github.com/erdnaxeli/adventofcode/aoc v0.2.0/go.mod h1:pqQdQm+QecQRYBqhBbMd8B3iXwuiJutKOl2GnN10GOc=
-github.com/erdnaxeli/adventofcode/aoc v0.3.0 h1:4HL7it4Hkfb7dGoW4TLWC977zUHyL4MJxQn7RIfMczw=
-github.com/erdnaxeli/adventofcode/aoc v0.3.0/go.mod h1:pqQdQm+QecQRYBqhBbMd8B3iXwuiJutKOl2GnN10GOc=
-github.com/erdnaxeli/adventofcode/aoc v0.4.0 h1:frau5yniuASK92p3VV3YTFpHxliFD4urU5ZOjXglcC8=
-github.com/erdnaxeli/adventofcode/aoc v0.4.0/go.mod h1:pqQdQm+QecQRYBqhBbMd8B3iXwuiJutKOl2GnN10GOc=
+github.com/erdnaxeli/adventofcode/aoc v1.0.0 h1:du7t0jVx0/eqXB76n8r7Fp9iEmu0/JgMFABSJpPbbL8=
+github.com/erdnaxeli/adventofcode/aoc v1.0.0/go.mod h1:pqQdQm+QecQRYBqhBbMd8B3iXwuiJutKOl2GnN10GOc=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
