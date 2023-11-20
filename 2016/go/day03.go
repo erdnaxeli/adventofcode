@@ -30,7 +30,6 @@ func (s solver) Day3p2(input aoc.Input) string {
 
 		if len(t1) == 3 {
 			for _, t := range [][]int{t1, t2, t3} {
-
 				if isTriangleValid(t) {
 					count++
 				}

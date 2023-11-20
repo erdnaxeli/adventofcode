@@ -51,19 +51,19 @@ func (s solver) Day2p2(input aoc.Input) string {
 	var positions []string
 	position := aoc.Point{-2, 0, 0}
 	grid := map[aoc.Point]string{
-		aoc.Point{0, 2, 0}:   "1",
-		aoc.Point{-1, 1, 0}:  "2",
-		aoc.Point{0, 1, 0}:   "3",
-		aoc.Point{1, 1, 0}:   "4",
-		aoc.Point{-2, 0, 0}:  "5",
-		aoc.Point{-1, 0, 0}:  "6",
-		aoc.Point{0, 0, 0}:   "7",
-		aoc.Point{1, 0, 0}:   "8",
-		aoc.Point{2, 0, 0}:   "9",
-		aoc.Point{-1, -1, 0}: "A",
-		aoc.Point{0, -1, 0}:  "B",
-		aoc.Point{1, -1, 0}:  "C",
-		aoc.Point{0, -2, 0}:  "D",
+		{0, 2, 0}:   "1",
+		{-1, 1, 0}:  "2",
+		{0, 1, 0}:   "3",
+		{1, 1, 0}:   "4",
+		{-2, 0, 0}:  "5",
+		{-1, 0, 0}:  "6",
+		{0, 0, 0}:   "7",
+		{1, 0, 0}:   "8",
+		{2, 0, 0}:   "9",
+		{-1, -1, 0}: "A",
+		{0, -1, 0}:  "B",
+		{1, -1, 0}:  "C",
+		{0, -2, 0}:  "D",
 	}
 	for _, line := range input.ToStringSlice() {
 		for _, char := range line {
