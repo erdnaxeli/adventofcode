@@ -3,33 +3,29 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
+	"regexp"
 
 	"github.com/erdnaxeli/adventofcode/aoc"
+)
+
+var (
+	CALIBRATION_VALUE_RGX       = regexp.MustCompile(`\d`)
+	CALIBRATION_VALUE_RGX_2     = regexp.MustCompile(`\d|one|two|three|four|five|six|seven|eight|nine`)
+	CALIBRATION_VALUE_RGX_2_rev = regexp.MustCompile(`\d|eno|owt|eerht|ruof|evif|xis|neves|thgie|enin`)
+	CALIBRATION_VALUE_TO_INT    = map[string]int{
+		"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+		"eno": 1, "owt": 2, "eerht": 3, "ruof": 4, "evif": 5, "xis": 6, "neves": 7, "thgie": 8, "enin": 9,
+		"1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9,
+	}
 )
 
 func (s solver) Day1p1(input aoc.Input) string {
 	sum := 0
 	for _, line := range input.ToStringSlice() {
-		var first, last int
-		var firstFound bool
-		for _, c := range line {
-			var err error
-			if !firstFound {
-				first, err = strconv.Atoi(string(c))
-				if err == nil {
-					firstFound = true
-				}
-			}
-
-			l, err := strconv.Atoi(string(c))
-			if err == nil {
-				last = l
-			}
-		}
-
-		sum += aoc.Atoi(fmt.Sprintf("%d%d", first, last))
-		log.Printf("%s: %d%d = %d", line, first, last, sum)
+		first := CALIBRATION_VALUE_RGX.FindString(string(line))
+		last := CALIBRATION_VALUE_RGX.FindString(reverse(string(line)))
+		sum += aoc.Atoi(fmt.Sprintf("%s%s", first, last))
+		log.Printf("%s: %s%s = %d", line, first, last, sum)
 	}
 
 	return aoc.ResultI(sum)
@@ -37,56 +33,23 @@ func (s solver) Day1p1(input aoc.Input) string {
 
 func (s solver) Day1p2(input aoc.Input) string {
 	sum := 0
-
 	for _, line := range input.ToStringSlice() {
-		var first, last int
-		var firstFound bool
-		for i := 0; i < len(line); i++ {
-			if !firstFound {
-				r := startsWithNumber(string(line[i:]))
-				if r > -1 {
-					first = r
-					firstFound = true
-				}
-			}
+		firstS := CALIBRATION_VALUE_RGX_2.FindString(string(line))
+		lastS := CALIBRATION_VALUE_RGX_2_rev.FindString(reverse(string(line)))
 
-			r := startsWithNumber(string(line[i:]))
-			if r > -1 {
-				last = r
-			}
-		}
-
+		first := CALIBRATION_VALUE_TO_INT[firstS]
+		last := CALIBRATION_VALUE_TO_INT[lastS]
 		sum += aoc.Atoi(fmt.Sprintf("%d%d", first, last))
+		log.Printf("%s: %d%d = %d", line, first, last, sum)
 	}
 
 	return aoc.ResultI(sum)
 }
 
-func startsWithNumber(s string) int {
-	i, err := strconv.Atoi(string(s[0]))
-	if err == nil {
-		return i
+func reverse(s string) string {
+	chars := []rune(s)
+	for i, j := 0, len(chars)-1; i < j; i, j = i+1, j-1 {
+		chars[i], chars[j] = chars[j], chars[i]
 	}
-
-	if len(s) >= 3 && s[:3] == "one" {
-		return 1
-	} else if len(s) >= 3 && s[:3] == "two" {
-		return 2
-	} else if len(s) >= 5 && s[:5] == "three" {
-		return 3
-	} else if len(s) >= 4 && s[:4] == "four" {
-		return 4
-	} else if len(s) >= 4 && s[:4] == "five" {
-		return 5
-	} else if len(s) >= 3 && s[:3] == "six" {
-		return 6
-	} else if len(s) >= 5 && s[:5] == "seven" {
-		return 7
-	} else if len(s) >= 5 && s[:5] == "eight" {
-		return 8
-	} else if len(s) >= 4 && s[:4] == "nine" {
-		return 9
-	}
-
-	return -1
+	return string(chars)
 }
