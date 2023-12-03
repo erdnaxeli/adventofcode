@@ -3,7 +3,7 @@
 :- module day01.
 :- interface.
 :- import_module io.
-:- pred main(io::di, io::uo) is cc_multi.
+:- pred main(io::di, io::uo) is det.
 :- implementation.
 
 :- import_module char.
@@ -11,11 +11,11 @@
 :- import_module list.
 :- import_module string.
 
-:- pred compute_solution(list(list(char))::in, int::out) is cc_multi.
+:- pred compute_solution(list(list(char))::in, int::out) is det.
 compute_solution(Lines, Result) :-
     compute_solution_2(Lines, 0, Result).
 
-:- pred compute_solution_2(list(list(char))::in, int::in, int::out) is cc_multi.
+:- pred compute_solution_2(list(list(char))::in, int::in, int::out) is det.
 compute_solution_2([ Line | Lines ], Acc, Result) :-
     compute_value(Line, Value),
     compute_solution_2(Lines, Acc + Value, Result).
@@ -23,18 +23,20 @@ compute_solution_2([ Line | Lines ], Acc, Result) :-
 compute_solution_2([], Acc, Result) :-
     Result = Acc.
 
-:- pred compute_value(list(char)::in, int::out) is cc_multi.
+:- pred compute_value(list(char)::in, int::out) is det.
 compute_value(Line, Value) :-
     compute_first_digit(Line, First_digit),
     compute_first_digit(reverse(Line), Second_digit),
     Value = First_digit*10 + Second_digit.
 
-:- pred compute_first_digit(list(char)::in, int::out) is cc_multi.
+:- pred compute_first_digit(list(char)::in, int::out) is det.
 compute_first_digit([], 0).
-compute_first_digit([ X | Xs], Digit) :-
-    (
-        to_int(from_char_list([X]), Digit)
-    ;
+compute_first_digit([ X | Xs ], Digit) :-
+    ( if
+        to_int(char_to_string(X), Digit0)
+    then
+        Digit = Digit0
+    else
         compute_first_digit(Xs, Digit)
     ).
 
