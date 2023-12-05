@@ -60,3 +60,9 @@ Every method must return a single string. If the string is empty, the `Runner` a
 the solution is not implemented.
 
 Have fun!
+
+## Roadmap
+
+Here is a list of thing I found missing when doing AoC exercices:
+* `Input.ToMatrix()`: it should return a slice of slice of strings.
+* a whole module to manage interval: intersect them, substract them, and so on.
