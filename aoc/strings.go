@@ -36,6 +36,10 @@ func (s String) Split() []String {
 	return result
 }
 
+func (s String) SplitS() []string {
+	return SPACE_REGEX.Split(string(s), -1)
+}
+
 func (s String) SplitAtoi() []int {
 	var result []int
 	for _, p := range s.Split() {
