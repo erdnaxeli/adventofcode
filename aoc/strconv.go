@@ -22,6 +22,10 @@ func ResultI(i int) string {
 	return fmt.Sprint(i)
 }
 
+func ResultF64(f float64) string {
+	return strconv.FormatFloat(f, 'f', -1, 64)
+}
+
 func ResultS(s []string) string {
 	return strings.Join(s, "")
 }
