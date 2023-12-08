@@ -57,3 +57,7 @@ func (s String) SplitOn(d string) []String {
 
 	return result
 }
+
+func (s String) SplitOnS(d string) []string {
+	return strings.Split(string(s), d)
+}
