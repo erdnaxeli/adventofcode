@@ -53,7 +53,7 @@ func (s solver) Day11p1(input aoc.Input) string {
 
 	sum := 0
 	for i, p1 := range coordinates {
-		for j := i; j < len(coordinates); j++ {
+		for j := i + 1; j < len(coordinates); j++ {
 			p2 := coordinates[j]
 			distance := math.Abs(float64(p2.X-p1.X)) + math.Abs(float64(p2.Y-p1.Y))
 			sum += int(distance)
@@ -64,7 +64,71 @@ func (s solver) Day11p1(input aoc.Input) string {
 }
 
 func (s solver) Day11p2(input aoc.Input) string {
-	return ""
+	grid := ToGrid(input)
+	var coordinates []aoc.Point
+	for x := range grid {
+		for y := range grid[0] {
+			if grid[x][y] == '#' {
+				coordinates = append(coordinates, aoc.Point{X: x, Y: y})
+			}
+		}
+	}
+
+	currentX := 0
+	for x := range grid {
+		isEmpty := true
+		for y := range grid[0] {
+			if grid[x][y] != '.' {
+				isEmpty = false
+				break
+			}
+		}
+
+		if isEmpty {
+			for i, coordinate := range coordinates {
+				if coordinate.X > currentX {
+					coordinates[i] = aoc.Point{X: coordinate.X + 999_999, Y: coordinate.Y}
+				}
+			}
+
+			currentX += 999_999
+		}
+
+		currentX++
+	}
+
+	currentY := 0
+	for y := range grid[0] {
+		isEmpty := true
+		for x := range grid {
+			if grid[x][y] != '.' {
+				isEmpty = false
+				break
+			}
+		}
+
+		if isEmpty {
+			for i, coordinate := range coordinates {
+				if coordinate.Y > currentY {
+					coordinates[i] = aoc.Point{X: coordinate.X, Y: coordinate.Y + 999_999}
+				}
+			}
+			currentY += 999_999
+		}
+
+		currentY++
+	}
+
+	sum := 0
+	for i, p1 := range coordinates {
+		for j := i + 1; j < len(coordinates); j++ {
+			p2 := coordinates[j]
+			distance := math.Abs(float64(p2.X-p1.X)) + math.Abs(float64(p2.Y-p1.Y))
+			sum += int(distance)
+		}
+	}
+
+	return aoc.ResultI(sum)
 }
 
 func ToGrid(input aoc.Input) [][]byte {
