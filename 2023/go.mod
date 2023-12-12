@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/erdnaxeli/adventofcode/aoc v1.2.0
 	github.com/stretchr/testify v1.8.4
+	golang.org/x/text v0.14.0
 )
 
 require (
