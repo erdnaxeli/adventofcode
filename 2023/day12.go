@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/erdnaxeli/adventofcode/aoc"
 )
 
@@ -12,7 +15,7 @@ const (
 	UnknownSpring
 )
 
-func (s Spring) String() string {
+/*func (s Spring) String() string {
 	switch s {
 	case OperationalSpring:
 		return "OperationalSpring"
@@ -23,11 +26,15 @@ func (s Spring) String() string {
 	default:
 		panic("")
 	}
-}
+}*/
 
 type springRow struct {
 	springs []Spring
 	groups  []int
+}
+
+func (s springRow) Hash() string {
+	return strings.Join(strings.Fields(fmt.Sprintf("%v-%v", s.springs, s.groups)), "-")
 }
 
 func (s solver) Day12p1(input aoc.Input) string {
@@ -41,7 +48,20 @@ func (s solver) Day12p1(input aoc.Input) string {
 }
 
 func (s solver) Day12p2(input aoc.Input) string {
-	return ""
+	rows := readSprings(input)
+	sum := 0
+	for _, row := range rows {
+		s, g := row.springs, row.groups
+		for i := 0; i < 4; i++ {
+			row.springs = append(row.springs, UnknownSpring)
+			row.springs = append(row.springs, s...)
+			row.groups = append(row.groups, g...)
+		}
+
+		sum += countPossibleSpringArrangements(row)
+	}
+
+	return aoc.ResultI(sum)
 }
 
 func readSprings(input aoc.Input) []springRow {
@@ -73,72 +93,109 @@ func readSprings(input aoc.Input) []springRow {
 	return result
 }
 
+var cache = make(map[string]int)
+
 func countPossibleSpringArrangements(row springRow) int {
-	// log.Printf("new row %+v", row)
-	prevDamagedSpringsCount := 0
+	rowHash := row.Hash()
+	if count, ok := cache[rowHash]; ok {
+		return count
+	}
+
+	// size of the current group of damaged springs
+	currentGroupCount := 0
+	// index of the current group in row.groups
 	groupIdx := 0
 	prevSpring := OperationalSpring
 	for i, spring := range row.springs {
-		// log.Printf("Spring %s", spring)
-
 		switch spring {
 		case OperationalSpring:
 			if prevSpring == DamagedSpring {
-				if prevDamagedSpringsCount != row.groups[groupIdx] {
-					// log.Print("invalid row: group incorrect size")
+				if currentGroupCount != row.groups[groupIdx] {
+					cache[rowHash] = 0
 					return 0
 				}
 
+				// preparing next group
 				groupIdx++
-				prevDamagedSpringsCount = 0
+				currentGroupCount = 0
 			}
 		case DamagedSpring:
 			if groupIdx >= len(row.groups) {
-				// log.Print("invalid row: too many groups")
+				cache[rowHash] = 0
 				return 0
 			}
 
-			prevDamagedSpringsCount++
-			if prevDamagedSpringsCount > row.groups[groupIdx] {
-				// log.Print("invalid row: group too big")
+			currentGroupCount++
+			if currentGroupCount > row.groups[groupIdx] {
+				cache[rowHash] = 0
 				return 0
 			}
 		case UnknownSpring:
-			if groupIdx == len(row.groups) || prevDamagedSpringsCount == row.groups[groupIdx] {
-				// all groups have been found or current group has correct size,
-				// next spring can only be operational
-				rowTry := springRow{springs: make([]Spring, len(row.springs)), groups: row.groups}
-				copy(rowTry.springs, row.springs)
-				rowTry.springs[i] = OperationalSpring
+			if groupIdx == len(row.groups) || (groupIdx == len(row.groups)-1 && currentGroupCount == row.groups[groupIdx]) {
+				// all groups have been found
+				for _, spring := range row.springs[i+1:] {
+					if spring == DamagedSpring {
+						cache[rowHash] = 0
+						return 0
+					}
+				}
 
-				return countPossibleSpringArrangements(rowTry)
-			} else if prevSpring == DamagedSpring && prevDamagedSpringsCount < row.groups[groupIdx] {
+				cache[rowHash] = 1
+				return 1
+			} else if currentGroupCount == row.groups[groupIdx] {
+				// current group has correct size, next spring can only be operational
+				rowTry := springRow{springs: make([]Spring, len(row.springs)-i), groups: row.groups[groupIdx+1:]}
+				copy(rowTry.springs, row.springs[i:])
+				rowTry.springs[0] = OperationalSpring
+
+				count := countPossibleSpringArrangements(rowTry)
+				cache[rowHash] = count
+				return count
+			} else if prevSpring == DamagedSpring {
 				// current group is not big enough, next spring can only be damaged
-				rowTry := springRow{springs: make([]Spring, len(row.springs)), groups: row.groups}
-				copy(rowTry.springs, row.springs)
-				rowTry.springs[i] = DamagedSpring
+				rowTry := springRow{
+					springs: make([]Spring, len(row.springs)-i),
+					groups:  make([]int, len(row.groups)-groupIdx),
+				}
+				copy(rowTry.groups, row.groups[groupIdx:])
+				rowTry.groups[0] -= currentGroupCount
+				copy(rowTry.springs, row.springs[i:])
+				rowTry.springs[0] = DamagedSpring
 
-				return countPossibleSpringArrangements(rowTry)
+				count := countPossibleSpringArrangements(rowTry)
+				cache[rowHash] = count
+				return count
 			} else {
 				// we try both
-				rowTry1 := springRow{springs: make([]Spring, len(row.springs)), groups: row.groups}
-				copy(rowTry1.springs, row.springs)
-				rowTry1.springs[i] = DamagedSpring
+				rowTry1 := springRow{
+					springs: make([]Spring, len(row.springs)-i),
+					groups:  row.groups[groupIdx:],
+				}
+				copy(rowTry1.springs, row.springs[i:])
+				rowTry1.springs[0] = DamagedSpring
 
-				rowTry2 := springRow{springs: make([]Spring, len(row.springs)), groups: row.groups}
-				copy(rowTry2.springs, row.springs)
-				rowTry2.springs[i] = OperationalSpring
+				rowTry2 := springRow{
+					springs: make([]Spring, len(row.springs)-i),
+					groups:  row.groups[groupIdx:],
+				}
+				copy(rowTry2.springs, row.springs[i:])
+				rowTry2.springs[0] = OperationalSpring
 
-				return countPossibleSpringArrangements(rowTry1) + countPossibleSpringArrangements(rowTry2)
+				count1 := countPossibleSpringArrangements(rowTry1)
+				count2 := countPossibleSpringArrangements(rowTry2)
+				cache[rowHash] = count1 + count2
+				return count1 + count2
 			}
 		}
 
 		prevSpring = spring
 	}
 
+	// check if we need to count last group
 	if prevSpring == DamagedSpring {
-		if prevDamagedSpringsCount != row.groups[groupIdx] {
+		if currentGroupCount != row.groups[groupIdx] {
 			// last group too small
+			cache[rowHash] = 0
 			return 0
 		}
 
@@ -148,9 +205,10 @@ func countPossibleSpringArrangements(row springRow) int {
 
 	// is there enough groups?
 	if groupIdx != len(row.groups) {
+		cache[rowHash] = 0
 		return 0
 	}
 
-	// log.Printf("Result found: %+v", row)
+	cache[rowHash] = 1
 	return 1
 }
