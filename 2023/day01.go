@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 
 	"github.com/erdnaxeli/adventofcode/aoc"
@@ -25,7 +24,7 @@ func (s solver) Day1p1(input aoc.Input) string {
 		first := CALIBRATION_VALUE_RGX.FindString(string(line))
 		last := CALIBRATION_VALUE_RGX.FindString(reverse(string(line)))
 		sum += aoc.Atoi(fmt.Sprintf("%s%s", first, last))
-		log.Printf("%s: %s%s = %d", line, first, last, sum)
+		// log.Printf("%s: %s%s = %d", line, first, last, sum)
 	}
 
 	return aoc.ResultI(sum)
@@ -40,7 +39,7 @@ func (s solver) Day1p2(input aoc.Input) string {
 		first := CALIBRATION_VALUE_TO_INT[firstS]
 		last := CALIBRATION_VALUE_TO_INT[lastS]
 		sum += aoc.Atoi(fmt.Sprintf("%d%d", first, last))
-		log.Printf("%s: %d%d = %d", line, first, last, sum)
+		// log.Printf("%s: %d%d = %d", line, first, last, sum)
 	}
 
 	return aoc.ResultI(sum)
