@@ -3,6 +3,7 @@ package aoc
 import (
 	"log"
 	"os"
+	"time"
 )
 
 // An object implementing the solutions for all days.
@@ -165,12 +166,13 @@ func (r Runner) Run(day int, part int) {
 
 	input := r.getInput(day, part)
 
+	t := time.Now()
 	solution := r.daysParts[day-1][part-1](input)
 	if solution == "" {
 		log.Fatalf("Day %d part %d is not implemented", day, part)
 	}
 
-	log.Printf("Got solution: %s", solution)
+	log.Printf("Got solution in %s: %s", time.Since(t), solution)
 	err := r.client.SendSolution(r.year, day, part, solution)
 	if err != nil {
 		log.Fatal(err)
