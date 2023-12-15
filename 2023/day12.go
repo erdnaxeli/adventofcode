@@ -93,11 +93,11 @@ func readSprings(input aoc.Input) []springRow {
 	return result
 }
 
-var cache = make(map[string]int)
+var springsCache = make(map[string]int)
 
 func countPossibleSpringArrangements(row springRow) int {
 	rowHash := row.Hash()
-	if count, ok := cache[rowHash]; ok {
+	if count, ok := springsCache[rowHash]; ok {
 		return count
 	}
 
@@ -111,7 +111,7 @@ func countPossibleSpringArrangements(row springRow) int {
 		case OperationalSpring:
 			if prevSpring == DamagedSpring {
 				if currentGroupCount != row.groups[groupIdx] {
-					cache[rowHash] = 0
+					springsCache[rowHash] = 0
 					return 0
 				}
 
@@ -121,13 +121,13 @@ func countPossibleSpringArrangements(row springRow) int {
 			}
 		case DamagedSpring:
 			if groupIdx >= len(row.groups) {
-				cache[rowHash] = 0
+				springsCache[rowHash] = 0
 				return 0
 			}
 
 			currentGroupCount++
 			if currentGroupCount > row.groups[groupIdx] {
-				cache[rowHash] = 0
+				springsCache[rowHash] = 0
 				return 0
 			}
 		case UnknownSpring:
@@ -135,12 +135,12 @@ func countPossibleSpringArrangements(row springRow) int {
 				// all groups have been found
 				for _, spring := range row.springs[i+1:] {
 					if spring == DamagedSpring {
-						cache[rowHash] = 0
+						springsCache[rowHash] = 0
 						return 0
 					}
 				}
 
-				cache[rowHash] = 1
+				springsCache[rowHash] = 1
 				return 1
 			} else if currentGroupCount == row.groups[groupIdx] {
 				// current group has correct size, next spring can only be operational
@@ -149,7 +149,7 @@ func countPossibleSpringArrangements(row springRow) int {
 				rowTry.springs[0] = OperationalSpring
 
 				count := countPossibleSpringArrangements(rowTry)
-				cache[rowHash] = count
+				springsCache[rowHash] = count
 				return count
 			} else if prevSpring == DamagedSpring {
 				// current group is not big enough, next spring can only be damaged
@@ -163,7 +163,7 @@ func countPossibleSpringArrangements(row springRow) int {
 				rowTry.springs[0] = DamagedSpring
 
 				count := countPossibleSpringArrangements(rowTry)
-				cache[rowHash] = count
+				springsCache[rowHash] = count
 				return count
 			} else {
 				// we try both
@@ -183,7 +183,7 @@ func countPossibleSpringArrangements(row springRow) int {
 
 				count1 := countPossibleSpringArrangements(rowTry1)
 				count2 := countPossibleSpringArrangements(rowTry2)
-				cache[rowHash] = count1 + count2
+				springsCache[rowHash] = count1 + count2
 				return count1 + count2
 			}
 		}
@@ -195,7 +195,7 @@ func countPossibleSpringArrangements(row springRow) int {
 	if prevSpring == DamagedSpring {
 		if currentGroupCount != row.groups[groupIdx] {
 			// last group too small
-			cache[rowHash] = 0
+			springsCache[rowHash] = 0
 			return 0
 		}
 
@@ -205,10 +205,10 @@ func countPossibleSpringArrangements(row springRow) int {
 
 	// is there enough groups?
 	if groupIdx != len(row.groups) {
-		cache[rowHash] = 0
+		springsCache[rowHash] = 0
 		return 0
 	}
 
-	cache[rowHash] = 1
+	springsCache[rowHash] = 1
 	return 1
 }
