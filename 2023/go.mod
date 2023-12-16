@@ -3,7 +3,7 @@ module github.com/erdnaxeli/adventofcode/2023
 go 1.21
 
 require (
-	github.com/erdnaxeli/adventofcode/aoc v1.3.0
+	github.com/erdnaxeli/adventofcode/aoc v1.4.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20231214170342-aacd6d4b4611
 )

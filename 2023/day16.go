@@ -88,7 +88,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X + 1, Y: m.Point.Y},
+						Point: m.Point.MoveSouth(),
 						From:  NORTH,
 					},
 				)
@@ -96,7 +96,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X - 1, Y: m.Point.Y},
+						Point: m.Point.MoveNorth(),
 						From:  SOUTH,
 					},
 				)
@@ -104,11 +104,11 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X - 1, Y: m.Point.Y},
+						Point: m.Point.MoveNorth(),
 						From:  SOUTH,
 					},
 					LightMove{
-						Point: aoc.Point{X: m.Point.X + 1, Y: m.Point.Y},
+						Point: m.Point.MoveSouth(),
 						From:  NORTH,
 					},
 				)
@@ -118,7 +118,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y + 1},
+						Point: m.Point.MoveEast(),
 						From:  WEST,
 					},
 				)
@@ -126,7 +126,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y - 1},
+						Point: m.Point.MoveWest(),
 						From:  EAST,
 					},
 				)
@@ -134,11 +134,11 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y + 1},
+						Point: m.Point.MoveEast(),
 						From:  WEST,
 					},
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y - 1},
+						Point: m.Point.MoveWest(),
 						From:  EAST,
 					},
 				)
@@ -148,7 +148,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y + 1},
+						Point: m.Point.MoveEast(),
 						From:  WEST,
 					},
 				)
@@ -156,7 +156,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X + 1, Y: m.Point.Y},
+						Point: m.Point.MoveSouth(),
 						From:  NORTH,
 					},
 				)
@@ -164,7 +164,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y - 1},
+						Point: m.Point.MoveWest(),
 						From:  EAST,
 					},
 				)
@@ -172,7 +172,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X - 1, Y: m.Point.Y},
+						Point: m.Point.MoveNorth(),
 						From:  SOUTH,
 					},
 				)
@@ -182,7 +182,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y - 1},
+						Point: m.Point.MoveWest(),
 						From:  EAST,
 					},
 				)
@@ -190,7 +190,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X - 1, Y: m.Point.Y},
+						Point: m.Point.MoveNorth(),
 						From:  SOUTH,
 					},
 				)
@@ -198,7 +198,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y + 1},
+						Point: m.Point.MoveEast(),
 						From:  WEST,
 					},
 				)
@@ -206,7 +206,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X + 1, Y: m.Point.Y},
+						Point: m.Point.MoveSouth(),
 						From:  NORTH,
 					},
 				)
@@ -216,7 +216,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X + 1, Y: m.Point.Y},
+						Point: m.Point.MoveSouth(),
 						From:  NORTH,
 					},
 				)
@@ -224,7 +224,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y + 1},
+						Point: m.Point.MoveEast(),
 						From:  WEST,
 					},
 				)
@@ -232,7 +232,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X - 1, Y: m.Point.Y},
+						Point: m.Point.MoveNorth(),
 						From:  SOUTH,
 					},
 				)
@@ -240,7 +240,7 @@ func getEnergizedTiles(grid [][]byte, move LightMove) int {
 				queue = append(
 					queue,
 					LightMove{
-						Point: aoc.Point{X: m.Point.X, Y: m.Point.Y - 1},
+						Point: m.Point.MoveWest(),
 						From:  EAST,
 					},
 				)
