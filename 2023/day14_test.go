@@ -38,5 +38,5 @@ O.#..O.#.#
 
 	result := solver{}.Day14p2(input)
 
-	assert.Equal(t, "137", result)
+	assert.Equal(t, "64", result)
 }

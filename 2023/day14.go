@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/erdnaxeli/adventofcode/aoc"
 )
@@ -15,23 +14,62 @@ func (s solver) Day14p1(input aoc.Input) string {
 
 func (s solver) Day14p2(input aoc.Input) string {
 	grid := ToGrid(input)
-	var load int
-
-	t := time.Now()
-	for i := 0; i < 1_000_000_000; i++ {
-		if i%10_000 == 0 {
-			log.Print(i, time.Since(t))
+	var cycle int
+	var cache [][][]byte
+	for step := 1; step <= 1_000_000_000; step++ {
+		var g [][]byte
+		if cycle == 0 {
+			g = make([][]byte, len(grid))
+			for x := range grid {
+				g[x] = make([]byte, len(grid[0]))
+				for y := range grid[0] {
+					g[x][y] = grid[x][y]
+				}
+			}
+		} else {
+			g = grid
 		}
-		tiltGridNorth(grid)
-		RotateGridClockwise(grid)
-		tiltGridNorth(grid)
-		RotateGridClockwise(grid)
-		tiltGridNorth(grid)
-		RotateGridClockwise(grid)
-		load = tiltGridNorth(grid)
-		RotateGridClockwise(grid)
+
+		tiltGridNorth(g)
+		RotateGridClockwise(g)
+		tiltGridNorth(g)
+		RotateGridClockwise(g)
+		tiltGridNorth(g)
+		RotateGridClockwise(g)
+		tiltGridNorth(g)
+		RotateGridClockwise(g)
+
+		if cycle == 0 {
+			cache = append(cache, grid)
+			grid = g
+
+			for i, g := range cache[:len(cache)-1] {
+				equal := true
+				for x := range grid {
+					for y := range grid {
+						if grid[x][y] != g[x][y] {
+							equal = false
+							break
+						}
+					}
+
+					if !equal {
+						break
+					}
+				}
+
+				if equal {
+					cycle = step - i
+					log.Printf("Cycle of size %d found after %d steps", i, step)
+					step += ((1_000_000_000-step)/cycle)*cycle - cycle
+					log.Printf("Jumping to step %d", step)
+					break
+				}
+			}
+		}
 	}
 
+	load := getGridLoad(grid)
 	return aoc.ResultI(load)
 }
 
@@ -61,6 +99,19 @@ func tiltGridNorth(grid [][]byte) int {
 				} else {
 					load += len(grid) - x
 				}
+			}
+		}
+	}
+
+	return load
+}
+
+func getGridLoad(grid [][]byte) int {
+	load := 0
+	for x := range grid {
+		for y := range grid {
+			if grid[x][y] == 'O' {
+				load += len(grid) - x
 			}
 		}
 	}
