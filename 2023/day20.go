@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
+	"slices"
 
 	"github.com/erdnaxeli/adventofcode/aoc"
+	"golang.org/x/exp/maps"
 )
 
 type Pulse int
@@ -22,6 +26,11 @@ type PulseMessage struct {
 type Module interface {
 	Receive(pm PulseMessage) []PulseMessage
 	AddInput(input string)
+
+	// helpers to print dot graph
+	GetPrefix() string
+	GetColor() string
+	GetOutputs() []string
 }
 
 type FlipFlopModule struct {
@@ -55,6 +64,22 @@ func (m *FlipFlopModule) Receive(pm PulseMessage) []PulseMessage {
 }
 
 func (*FlipFlopModule) AddInput(input string) {}
+
+func (*FlipFlopModule) GetPrefix() string {
+	return "%"
+}
+
+func (m *FlipFlopModule) GetColor() string {
+	if m.isOn {
+		return "blue"
+	} else {
+		return "white"
+	}
+}
+
+func (m *FlipFlopModule) GetOutputs() []string {
+	return m.outputs
+}
 
 type ConjunctionModule struct {
 	inputs  map[string]Pulse
@@ -91,6 +116,18 @@ func (m *ConjunctionModule) AddInput(input string) {
 	m.inputs[input] = LowPulse
 }
 
+func (*ConjunctionModule) GetPrefix() string {
+	return "&"
+}
+
+func (*ConjunctionModule) GetColor() string {
+	return "white"
+}
+
+func (m *ConjunctionModule) GetOutputs() []string {
+	return m.outputs
+}
+
 type BroadcastModule struct {
 	outputs []string
 }
@@ -110,6 +147,18 @@ func (m BroadcastModule) Receive(pm PulseMessage) []PulseMessage {
 
 func (m BroadcastModule) AddInput(input string) {}
 
+func (BroadcastModule) GetPrefix() string {
+	return ""
+}
+
+func (BroadcastModule) GetColor() string {
+	return "white"
+}
+
+func (m BroadcastModule) GetOutputs() []string {
+	return m.outputs
+}
+
 type ButtonModule struct{}
 
 func NewButtonModule() ButtonModule {
@@ -122,10 +171,21 @@ func (m ButtonModule) Receive(pm PulseMessage) []PulseMessage {
 
 func (ButtonModule) AddInput(input string) {}
 
+func (ButtonModule) GetPrefix() string {
+	return ""
+}
+
+func (ButtonModule) GetColor() string {
+	return "white"
+}
+
+func (m ButtonModule) GetOutputs() []string {
+	return []string{"broadcaster"}
+}
+
 func (s solver) Day20p1(input aoc.Input) string {
 	modules := make(map[string]Module)
 	modules["button"] = NewButtonModule()
-	// list of inputs for module not yet created
 	modules = ParseModules(modules, input)
 
 	lowPulses := 0
@@ -171,9 +231,46 @@ func (s solver) Day20p1(input aoc.Input) string {
 }
 
 func (s solver) Day20p2(input aoc.Input) string {
+	// The graph of connected module is divided in for parts. Each part is a succession
+	// of flip flop connected to a conjunction, then to another conjunction (with act
+	// like an inverter). The for part are then connected to a conjunction, which is
+	// connected to rx.
+	//
+	// broadcaster ---> some flip flops -> conjunction -> inverter ---> conjunction -> rx
+	//              \-> some flip flops -> conjunction -> invertor -/
+	//              \-> some flip flops -> conjunction -> invertor -/
+	//              \-> some flip flops -> conjunction -> invertor -/
+	//
+	// For each part we need all the flip flop connected to the first conjunction to
+	// switch all in sync from off to on, so they send a high signal. Then the
+	// conjunction send a low signal which reset all the flip flop and goes to the
+	// inverter, which send a high signal to the last conjunction.
+	//
+	// In order to send a low signal to rx, we need all parts to send in sync a high
+	// signal to the last conjunction.
+	//
+	// Each of the four parts is arranged in a way so that they all have a different
+	// cycle length. Once the cycle length determined, we just have to wait until they
+	// are all synchronized.
+	r := getLeastCommonMultiple([]int{3739, 3797, 3889, 3761})
+	return aoc.ResultF64(r)
+
+	// The following code was only use to print the result of the graph for each of the
+	// first 4096 button pushes.
+	//
+	// To generate a video:
+	// * run this code
+	// * generate a png file for each dot file:
+	//	   parallel -j12 dot -Gsize=9,15\! -Gdpi=200 -Tpng -O {} ::: *.dot
+	// * generate a video from those png files:
+	//     ffmpeg -framerate 24 -i day20_%04d.dot.png -c:v libx264 -r 30
+	//       -pix_fmt yuv420p -vf "drawtext=fontfile=Arial.ttf: text='%{frame_num}':
+	//         start_number=1: x=(w-tw)/2: y=h-(2*lh): fontcolor=black: fontsize=20:
+	//         box=1: boxcolor=white: boxborderw=5"
+	//       day20.mp4
+
 	modules := make(map[string]Module)
 	modules["button"] = NewButtonModule()
-	// list of inputs for module not yet created
 	modules = ParseModules(modules, input)
 
 	buttonPushes := 0
@@ -181,14 +278,40 @@ func (s solver) Day20p2(input aoc.Input) string {
 	var messages []PulseMessage
 	for {
 		if len(messages) == 0 {
+			file, _ := os.Create(fmt.Sprintf("day20_%04d.dot", buttonPushes))
+			defer file.Close()
+			fmt.Fprintln(file, "digraph G {")
+			keys := maps.Keys(modules)
+			slices.Sort(keys)
+			for _, name := range keys {
+				module := modules[name]
+				fmt.Fprintf(
+					file,
+					"\t%s [label=\"%s%s\"; style=filled; fillcolor=%s]\n",
+					name,
+					module.GetPrefix(),
+					name,
+					module.GetColor(),
+				)
+				for _, output := range module.GetOutputs() {
+					fmt.Fprintf(file, "\t%s -> %s\n", name, output)
+				}
+			}
+			fmt.Fprintln(file, "}")
+
 			messages = []PulseMessage{{Dest: "button"}}
+			if buttonPushes == 4096 {
+				return ""
+			}
+
 			buttonPushes++
-			// log.Print(buttonPushes)
+			if buttonPushes%100_000 == 0 {
+				log.Print(buttonPushes)
+			}
 		}
 
 		message := messages[0]
 		messages = messages[1:]
-		log.Printf("%+v", message)
 
 		if message.Dest == "rx" && message.Pulse == LowPulse {
 			break
@@ -203,7 +326,6 @@ func (s solver) Day20p2(input aoc.Input) string {
 
 		for i := range newMessages {
 			newMessages[i].Source = message.Dest
-			log.Printf("\t%+v", newMessages[i])
 		}
 
 		messages = append(messages, newMessages...)
@@ -213,6 +335,7 @@ func (s solver) Day20p2(input aoc.Input) string {
 }
 
 func ParseModules(modules map[string]Module, input aoc.Input) map[string]Module {
+	// list of inputs for module not yet created
 	inputs := make(map[string][]string)
 
 	for _, line := range input.ToStringSlice() {
