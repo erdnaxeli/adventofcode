@@ -14,16 +14,16 @@ def read_input():
     return l1, l2
 
 
-def day1():
+def part1():
     l1, l2 = read_input()
     return sum(abs(id1 - id2) for id1, id2 in zip(sorted(l1), sorted(l2)))
 
 
-def day2():
+def part2():
     l1, l2 = read_input()
     counts = Counter(l2)
     return sum(id * counts.get(id, 0) for id in l1)
 
 
-print(day1())
-print(day2())
+print(part1())
+print(part2())
