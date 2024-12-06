@@ -63,7 +63,9 @@ def part2(input):
         else:
             return 1
 
-    corrected_updates = [sorted(update, key=cmp_to_key(cmp)) for update in invalid_updates]
+    corrected_updates = [
+        sorted(update, key=cmp_to_key(cmp)) for update in invalid_updates
+    ]
     return sum(x[(len(x) - 1) // 2] for x in corrected_updates)
 
 
