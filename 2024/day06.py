@@ -63,23 +63,22 @@ def will_it_loop(x, y, direction, grid, points):
                 return True
 
             x, y = nx, ny
-            grid[(x,y)] = "+"
+            grid[(x, y)] = "+"
 
 
 def print_grid(grid, points):
     xmax, ymax = max(grid.keys())
-    for x in range(xmax+1):
-        for y in range(xmax+1):
-            if points[(x,y)]:
+    for x in range(xmax + 1):
+        for y in range(xmax + 1):
+            if points[(x, y)]:
                 print("*", end="")
             else:
-                print(grid[(x,y)], end="")
+                print(grid[(x, y)], end="")
 
         print()
 
     input()
     print()
-
 
 
 def part2(grid):
@@ -97,15 +96,15 @@ def part2(grid):
             direction = rotate_right(direction)
         else:
             # print_grid(grid, points)
-            if not points[(nx,ny)]:
+            if not points[(nx, ny)]:
                 test_grid = grid.copy()
                 test_grid[(nx, ny)] = "#"
-                if will_it_loop(x, y,  rotate_right(direction), test_grid, deepcopy(points)):
+                if will_it_loop(
+                    x, y, rotate_right(direction), test_grid, deepcopy(points)
+                ):
                     blocks += 1
 
             x, y = nx, ny
-
-
 
 
 grid = read_grid("day06.txt", lambda: "")
