@@ -107,6 +107,7 @@ def part2(grid):
             x, y = nx, ny
 
 
-grid = read_grid("day06.txt", lambda: "")
-print(part1(grid))
-print(part2(grid))
+if __name__ == "__main__":
+    grid = read_grid("day06.txt", lambda: "")
+    print(part1(grid))
+    print(part2(grid))

@@ -55,7 +55,7 @@ def part2(input):
     rules_by_page = {}
     for rule in rules:
         r1, r2 = rule
-        rules_by_page[r1] = rules_by_page.get(r1, []) + [r2]
+        rules_by_page[r1] = [*rules_by_page.get(r1, []), [r2]]
 
     def cmp(a, b):
         if b in rules_by_page.get(a, []):
