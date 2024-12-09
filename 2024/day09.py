@@ -6,6 +6,7 @@ from pathlib import Path
 def read_input():
     return map(int, Path("day09.txt").read_text().rstrip())
 
+
 def get_disk_view(map):
     disk = []
     id_number = 0
@@ -63,10 +64,10 @@ def part2(map):
                 file_index = sum(disk_map[:j])
                 new_index = sum(disk_map[:i])
 
-                disk[new_index: new_index + file_size] = [id_number] * file_size
-                disk[file_index: file_index + file_size] = ["."] * file_size
+                disk[new_index : new_index + file_size] = [id_number] * file_size
+                disk[file_index : file_index + file_size] = ["."] * file_size
 
-                disk_map[i-1] += file_size
+                disk_map[i - 1] += file_size
                 disk_map[i] -= file_size
                 disk_map[j] = 0
                 break

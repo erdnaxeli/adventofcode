@@ -55,7 +55,9 @@ def part2(grid):
             # We need to _reduce_ the vector to the smallest one that goes on a grid position,
             # e.g. (9, 15) becomes (3,5).
             # This is actually not needed for the given input, but it could have happened.
-            distance = reduce_vector(antenna_a[0] - antenna_b[0], antenna_a[1] - antenna_b[1])
+            distance = reduce_vector(
+                antenna_a[0] - antenna_b[0], antenna_a[1] - antenna_b[1]
+            )
 
             p = antenna_a
             while p in grid:
@@ -67,7 +69,6 @@ def part2(grid):
             while p in grid:
                 antinodes.add(p)
                 p = (p[0] - distance[0], p[1] - distance[1])
-
 
     return len(antinodes)
 
