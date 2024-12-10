@@ -2,13 +2,17 @@ from collections import defaultdict
 from copy import deepcopy
 
 
-def read_grid(filename, default):
+def read_grid(filename, default, transform: None):
     grid = defaultdict(default)
     x, y = 0, 0
     with open(filename) as f:
         for line in f:
             for char in line.rstrip():
-                grid[(x, y)] = char
+                if transform:
+                    grid[(x, y)] = transform(char)
+                else:
+                    grid[(x, y)] = char
+
                 y += 1
 
             x += 1
