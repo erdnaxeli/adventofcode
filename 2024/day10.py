@@ -1,4 +1,4 @@
-from day06 import read_grid
+from grid import read_grid
 
 DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 

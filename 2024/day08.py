@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import combinations
 from math import floor, sqrt
 
-from day06 import read_grid
+from grid import read_grid
 
 
 def get_antennas(grid):
