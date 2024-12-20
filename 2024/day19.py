@@ -1,27 +1,69 @@
-import re
+from functools import cache
 
 
 def read_input():
     with open("day19.txt") as f:
-        pattern = f'^({"|".join(f.readline().rstrip().split(", "))})++$'
+        towels = f.readline().rstrip().split(", ")
         f.readline()
 
         designs = [line.rstrip() for line in f]
-        return re.compile(pattern), designs
+        return towels, designs
 
 
-def part1(pattern, designs):
-    count = 0
-    for design in designs:
-        if pattern.match(design):
-            count += 1
-        else:
-            print(design)
+class Part1:
+    def __init__(self, towels, designs):
+        self.towels = towels
+        self.designs = designs
+        self.cache = {}
 
-    return count
+    @cache
+    def can_do(self, design):
+        if not design:
+            return True
+
+        for towel in self.towels:
+            if design.startswith(towel) and self.can_do(design[len(towel) :]):
+                return True
+
+        return False
+
+    def solve(self):
+        count = 0
+        for design in self.designs:
+            if self.can_do(design):
+                count += 1
+
+        return count
+
+
+class Part2:
+    def __init__(self, towels, designs):
+        self.towels = towels
+        self.designs = designs
+        self.cache = {}
+
+    @cache
+    def can_do(self, design):
+        if not design:
+            return 1
+
+        count = 0
+        for towel in self.towels:
+            if design.startswith(towel):
+                count += self.can_do(design[len(towel):])
+
+        return count
+
+    def solve(self):
+        count = 0
+        for design in self.designs:
+            count += self.can_do(design)
+
+        return count
 
 
 if __name__ == "__main__":
-    pattern, designs = read_input()
+    towels, designs = read_input()
 
-    print(part1(pattern, designs))
+    print(Part1(towels, designs).solve())
+    print(Part2(towels, designs).solve())
