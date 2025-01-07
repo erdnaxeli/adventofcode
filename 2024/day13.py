@@ -35,6 +35,14 @@ def solve(machine: Machine) -> Optional[int]:
     px, py = machine.Prize
     ax, ay = machine.A
     bx, by = machine.B
+
+    # P = xA + yB  (x is a_count, y is b_count)
+    # We got a system with two equations:
+    # px = x*ax + y*bx
+    # py = x*ay + y*by
+    #
+    # x = (px - y*bx) / ax
+    # Replace x in the second equation and solve. We got:
     b_count = (ax * py - ay * px) / (ax * by - ay * bx)
     a_count = (px - b_count * bx) / ax
 
