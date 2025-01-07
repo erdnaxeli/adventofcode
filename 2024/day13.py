@@ -31,47 +31,17 @@ def read_input() -> list[Machine]:
     return machines
 
 
-def _solve(
-    machine: Machine,
-    a_count: int,
-    b_count: int,
-    position: tuple[int, int],
-    cost: int,
-    cache: dict[tuple[int, int], Optional[int]],
-) -> Optional[int]:
-    if (a_count, b_count) in cache:
-        return cache[(a_count, b_count)]
-
-    if position[0] > machine.Prize[0] or position[1] > machine.Prize[1]:
-        return None
-
-    if position[0] == machine.Prize[0] and position[1] == machine.Prize[1]:
-        return cost
-
-    cost_a = _solve(
-        machine,
-        a_count + 1,
-        b_count,
-        (position[0] + machine.A[0], position[1] + machine.A[1]),
-        cost + 3,
-        cache,
-    )
-    cost_b = _solve(
-        machine,
-        a_count,
-        b_count + 1,
-        (position[0] + machine.B[0], position[1] + machine.B[1]),
-        cost + 1,
-        cache,
-    )
-
-    new_cost = min((c for c in (cost_a, cost_b) if c is not None), default=None)
-    cache[(a_count, b_count)] = new_cost
-    return new_cost
-
-
 def solve(machine: Machine) -> Optional[int]:
-    return _solve(machine, 0, 0, (0, 0), 0, {})
+    px, py = machine.Prize
+    ax, ay = machine.A
+    bx, by = machine.B
+    b_count = (ax * py - ay * px) / (ax * by - ay * bx)
+    a_count = (px - b_count * bx) / ax
+
+    if a_count.is_integer() and b_count.is_integer():
+        return int(3 * a_count + b_count)
+
+    return None
 
 
 def part1(machines: list[Machine]) -> int:
@@ -87,11 +57,11 @@ def part1(machines: list[Machine]) -> int:
 def part2(machines: list[Machine]) -> int:
     total_cost = 0
     for machine in machines:
-        machine.Prize[0] += 10000000000000
-        machine.Prize[1] += 10000000000000
-        print(machine)
+        machine.Prize = (
+            machine.Prize[0] + 10000000000000,
+            machine.Prize[1] + 10000000000000,
+        )
         cost = solve(machine)
-        print(cost)
         if cost is not None:
             total_cost += cost
 
@@ -101,4 +71,4 @@ def part2(machines: list[Machine]) -> int:
 if __name__ == "__main__":
     machines = read_input()
     print(part1(machines))
-    # print(part2(machines))
+    print(part2(machines))
