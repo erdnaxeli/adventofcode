@@ -50,7 +50,7 @@ class Part2:
         count = 0
         for towel in self.towels:
             if design.startswith(towel):
-                count += self.can_do(design[len(towel):])
+                count += self.can_do(design[len(towel) :])
 
         return count
 

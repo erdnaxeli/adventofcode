@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from bisect import insort
 from os import getenv
 
 from grid import DOWN, LEFT, RIGHT, UP, add_points, read_grid

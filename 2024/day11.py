@@ -1,6 +1,6 @@
 from functools import cache
 
-input = [4, 4841539, 66, 5279, 49207, 134, 609568, 0]
+STONES = [4, 4841539, 66, 5279, 49207, 134, 609568, 0]
 
 
 @cache
@@ -15,7 +15,7 @@ def blink(stone):
         return [stone * 2024]
 
     factor = 10 ** (len(stone_s) // 2)
-    return stone // factor, stone % factor
+    return [stone // factor, stone % factor]
 
 
 def part1(stones):
@@ -26,12 +26,19 @@ def part1(stones):
 
 
 def part2(stones):
-    for i in range(75):
-        print(i, len(stones))
-        stones = [new_stone for stone in stones for new_stone in blink(stone)]
+    stones_count = {stone: 1 for stone in stones}
 
-    return len(stones)
+    for _ in range(75):
+        tmp = {}
+        for stone in stones_count:
+            for new_stone in blink(stone):
+                tmp[new_stone] = tmp.get(new_stone, 0) + stones_count[stone]
+
+        stones_count = tmp
+
+    return sum(stones_count.values())
 
 
-print(part1(input.copy()))
-print(part2(input.copy()))
+if __name__ == "__main__":
+    print(part1(STONES.copy()))
+    print(part2(STONES.copy()))
