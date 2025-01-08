@@ -1,6 +1,4 @@
 import re
-import time
-from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -66,7 +64,7 @@ def part2(robots: list[Robot]) -> int:
 
         # We suppose that the drawing we are looking for does not contain
         # two or more robot on the same position.
-        if len(set(robot.p for robot in robots))  == len(robots):
+        if len(set(robot.p for robot in robots)) == len(robots):
             robots.sort(key=lambda r: (r.p[1], r.p[0]))
 
             x, y = 0, 0

@@ -37,3 +37,14 @@ def read_grid(filename, default, transform=None):
             y = 0
 
     return grid
+
+
+def print_grid(grid):
+    xmax, ymax = max(grid.keys())
+    for x in range(xmax + 1):
+        for y in range(ymax + 1):
+            print(grid[(x, y)], end="")
+
+        print()
+
+    print()
