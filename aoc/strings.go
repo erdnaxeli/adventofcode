@@ -2,7 +2,6 @@ package aoc
 
 import (
 	"regexp"
-	"strconv"
 	"strings"
 )
 
@@ -19,12 +18,7 @@ func (s String) From(i int) String {
 }
 
 func (s String) Atoi() int {
-	n, err := strconv.Atoi(string(s))
-	if err != nil {
-		panic(err)
-	}
-
-	return n
+	return Atoi(string(s))
 }
 
 func (s String) Split() []String {
@@ -53,6 +47,15 @@ func (s String) SplitOn(d string) []String {
 	var result []String
 	for _, p := range strings.Split(string(s), d) {
 		result = append(result, String(p))
+	}
+
+	return result
+}
+
+func (s String) SplitOnAtoi(d string) []int {
+	var result []int
+	for _, p := range strings.Split(string(s), d) {
+		result = append(result, Atoi(p))
 	}
 
 	return result
