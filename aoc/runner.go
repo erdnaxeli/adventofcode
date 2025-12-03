@@ -1,8 +1,10 @@
 package aoc
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"testing"
 	"time"
 )
 
@@ -143,6 +145,11 @@ func NewRunner(year int, cache Cache, client Client, solver Solver) Runner {
 // It reads the day and the part for the executable arguments. The first argument
 // is the day, the second is the part.
 func (r Runner) RunCli() {
+	if len(os.Args) > 1 && os.Args[1] == "bench" {
+		r.Benchmark()
+		return
+	}
+
 	if len(os.Args) != 3 {
 		log.Fatal("It expects two arguments: day and part.")
 	}
@@ -179,6 +186,51 @@ func (r Runner) Run(day int, part int) {
 	}
 
 	log.Print("Success!")
+}
+
+// Benchmark runs a benchmark over all implemented solutions, and print the result.
+func (r Runner) Benchmark() {
+	stdout := os.Stdout
+	defer func() { os.Stdout = stdout }()
+	os.Stdout, _ = os.Open(os.DevNull)
+
+	for day := range 25 {
+		for part := range 2 {
+			input := r.getInput(day+1, part+1)
+			result := r.daysParts[day][part](input)
+			if result == "" {
+				continue
+			}
+
+			bench := testing.Benchmark(func(b *testing.B) {
+				for b.Loop() {
+					r.daysParts[day][part](input)
+				}
+			})
+
+			ns := float64(bench.NsPerOp())
+			var timePerOp string
+			if ns > 1_000_000 {
+				timePerOp = fmt.Sprintf("%.2f ms/op", ns/1_000_000)
+			} else if ns > 1000 {
+				timePerOp = fmt.Sprintf("%.2f µs/op", ns/1000)
+			} else {
+				timePerOp = fmt.Sprintf("%.0f ns/op", ns)
+			}
+
+			bytes := float64(bench.AllocedBytesPerOp())
+			var memPerOp string
+			if bytes > 1_000_000 {
+				memPerOp = fmt.Sprintf("%.2f Mb/op", bytes/1_000_000)
+			} else if bytes > 1000 {
+				memPerOp = fmt.Sprintf("%.2f kb/op", bytes/1000)
+			} else {
+				memPerOp = fmt.Sprintf("%.0f b/op", bytes)
+			}
+
+			fmt.Fprintf(stdout, "day %d, part %d: %s\t%s\n", day+1, part+1, timePerOp, memPerOp)
+		}
+	}
 }
 
 func (r Runner) getInput(day int, part int) Input {
