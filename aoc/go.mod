@@ -1,10 +1,12 @@
 module github.com/erdnaxeli/adventofcode/aoc
 
-go 1.23.0
+go 1.24.0
+
+toolchain go1.24.11
 
 require (
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/net v0.38.0
+	golang.org/x/net v0.47.0
 )
 
 require (
