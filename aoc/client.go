@@ -56,6 +56,10 @@ func (c DefaultClient) GetInput(year int, day int, part int) (Input, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return Input{}, fmt.Errorf("got an HTTP error: %s", resp.Status)
+	}
+
 	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return Input{}, err
