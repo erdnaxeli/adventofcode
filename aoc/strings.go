@@ -64,3 +64,7 @@ func (s String) SplitOnAtoi(d string) []int {
 func (s String) SplitOnS(d string) []string {
 	return strings.Split(string(s), d)
 }
+
+func (s String) ToIntSlice() []int {
+	return s.SplitOnAtoi("")
+}
