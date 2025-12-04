@@ -72,6 +72,15 @@ func (i Input) ToStringSlice() []String {
 	return trimmedLines
 }
 
+func (i Input) ToGrid() Grid {
+	var grid [][]byte
+	for _, line := range i.ToStringSlice() {
+		grid = append(grid, []byte(line))
+	}
+
+	return Grid{grid: grid}
+}
+
 func (i Input) getDelimiter() string {
 	if i.delimiter != "" {
 		return i.delimiter
