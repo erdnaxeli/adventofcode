@@ -10,6 +10,10 @@ type Input struct {
 	multiline bool
 }
 
+// NewInput return a new Input object.
+//
+// By default the input is configured in multiline mode, without any delimiter,
+// which is equivalent to using a "\n" delimiter.
 func NewInput(content string) Input {
 	return Input{
 		content:   strings.TrimRight(content, "\n"),
@@ -22,6 +26,12 @@ func (i Input) Content() string {
 	return i.content
 }
 
+// Delimiter sets the delimiter used by methods to split the input.
+//
+// If the delimiter set is different than "" it overwrite the multiline
+// configuration.
+//
+// It returns the same input, so methods can be chained.
 func (i Input) Delimiter(d string) Input {
 	i.delimiter = d
 	return i
@@ -48,30 +58,51 @@ func (i Input) Rotate() []String {
 	return result
 }
 
+// SingleLine set the multiline mode to false.
+//
+// In multiline mode, the input is split on "\n".
+// In singleline, the input is split on each char.
+//
+// If a delimiter is set, the multiline mode is ignored.
 func (i Input) SingleLine() Input {
 	i.multiline = false
 	return i
 }
 
+// ToIntSlice parse the input as a slice of int.
+//
+// If a delimiter is set, it is used to split the input.
+// Else in multiline mode the input is split on each line.
+// Else the input is plit on each char.
+//
+// If any part cannot be parsed as an int, it panics.
 func (i Input) ToIntSlice() []int {
 	var result []int
-	for _, elt := range strings.Split(i.content, i.getDelimiter()) {
+	for elt := range strings.SplitSeq(i.content, i.getDelimiter()) {
 		result = append(result, Atoi(elt))
 	}
 
 	return result
 }
 
+// ToStringSlice parse the input as a slice of String.
+//
+// If a delimiter is set, it is used to split the input.
+// Else in multiline mode the input is split on each line.
+// Else the input is plit on each char.
 func (i Input) ToStringSlice() []String {
-	lines := strings.Split(i.content, i.getDelimiter())
 	var trimmedLines []String
-	for _, line := range lines {
+	for line := range strings.SplitSeq(i.content, i.getDelimiter()) {
 		trimmedLines = append(trimmedLines, String(strings.TrimSpace(line)))
 	}
 
 	return trimmedLines
 }
 
+// ToGrid parse the input as a grid.
+//
+// x is the axe from top to bottom, y is the axis from left to right.
+// (0, 0) is the top left point.
 func (i Input) ToGrid() Grid {
 	var grid [][]byte
 	for _, line := range i.ToStringSlice() {

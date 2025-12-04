@@ -41,6 +41,6 @@ bonjour
 
 	result := input.ToStringSlice()
 
-	expected := []string{"some", "string", "a", "b", "c", "asrnuite", "dd", "bonjour"}
+	expected := []aoc.String{"some", "string", "a", "b", "c", "asrnuite", "dd", "bonjour"}
 	assert.Equal(t, expected, result)
 }
