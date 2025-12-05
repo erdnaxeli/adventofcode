@@ -124,8 +124,8 @@ func (i Input) ToGrid() Grid {
 func (i Input) ToRanges(inclusive bool) []Range {
 	var ranges []Range
 
-	for line := range i.Lines() {
-		parts := line.SplitOnAtoi("-")
+	for line := range strings.SplitSeq(i.content, i.getDelimiter()) {
+		parts := String(line).SplitOnAtoi("-")
 		ranges = append(ranges, NewRange(parts[0], parts[1], inclusive))
 	}
 
