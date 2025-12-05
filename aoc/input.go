@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"iter"
 	"strings"
 )
 
@@ -69,6 +70,14 @@ func (i Input) SingleLine() Input {
 	return i
 }
 
+func (i Input) Lines() iter.Seq[String] {
+	return func(yield func(String) bool) {
+		for line := range strings.SplitSeq(i.content, "\n") {
+			yield(String(line))
+		}
+	}
+}
+
 // ToIntSlice parse the input as a slice of int.
 //
 // If a delimiter is set, it is used to split the input.
@@ -110,6 +119,23 @@ func (i Input) ToGrid() Grid {
 	}
 
 	return Grid{grid: grid}
+}
+
+func (i Input) ToRanges(inclusive bool) []Range {
+	var ranges []Range
+
+	for line := range i.Lines() {
+		parts := line.SplitOnAtoi("-")
+		ranges = append(ranges, NewRange(parts[0], parts[1], inclusive))
+	}
+
+	return ranges
+}
+
+// MultiInput split and parse the input as two differents input separated by an empty line.
+func MultiInput[R1, R2 any](i Input, parseInput1 func(i Input) R1, parseInput2 func(i Input) R2) (R1, R2) {
+	parts := strings.Split(i.content, "\n\n")
+	return parseInput1(NewInput(parts[0])), parseInput2(NewInput(parts[1]))
 }
 
 func (i Input) getDelimiter() string {
