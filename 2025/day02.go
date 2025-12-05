@@ -6,13 +6,8 @@ import (
 	"github.com/erdnaxeli/adventofcode/aoc"
 )
 
-type ProductIDRange struct {
-	first int
-	last  int
-}
-
 func (s solver) Day2p1(input aoc.Input) string {
-	productIdRanges := parseInputD2(input)
+	productIdRanges := input.Delimiter(",").ToRanges(true)
 
 	sum := 0
 	for _, productIdRange := range productIdRanges {
@@ -27,21 +22,9 @@ func (s solver) Day2p2(input aoc.Input) string {
 	return ""
 }
 
-func parseInputD2(input aoc.Input) []ProductIDRange {
-	var productIdsRanges []ProductIDRange
-
-	productIdRangesS := input.Delimiter(",").ToStringSlice()
-	for _, productIdRangeS := range productIdRangesS {
-		parts := productIdRangeS.SplitOnAtoi("-")
-		productIdsRanges = append(productIdsRanges, ProductIDRange{first: parts[0], last: parts[1]})
-	}
-
-	return productIdsRanges
-}
-
-func getSumInvalidProductID(productIdRange ProductIDRange) int {
+func getSumInvalidProductID(productIdRange aoc.Range) int {
 	sum := 0
-	for productId := productIdRange.first; productId <= productIdRange.last; productId++ {
+	for productId := productIdRange.Start; productId <= productIdRange.End; productId++ {
 		if !isProductIDValid(productId) {
 			sum += productId
 		}
