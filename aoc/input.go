@@ -112,13 +112,22 @@ func (i Input) ToStringSlice() []String {
 //
 // x is the axe from top to bottom, y is the axis from left to right.
 // (0, 0) is the top left point.
-func (i Input) ToGrid() Grid {
+func (i Input) ToGrid() Grid[byte] {
 	var grid [][]byte
-	for _, line := range i.ToStringSlice() {
+	for line := range strings.SplitSeq(i.content, i.getDelimiter()) {
 		grid = append(grid, []byte(line))
 	}
 
-	return Grid{grid: grid}
+	return Grid[byte]{grid: grid}
+}
+
+func (i Input) ToGridS() Grid[String] {
+	var grid [][]String
+	for _, line := range i.ToStringSlice() {
+		grid = append(grid, line.Split())
+	}
+
+	return Grid[String]{grid: grid}
 }
 
 func (i Input) ToRanges(inclusive bool) []Range {

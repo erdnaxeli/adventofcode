@@ -29,7 +29,7 @@ func (s solver) Day4p2(input aoc.Input) string {
 	return aoc.ResultI(accessiblesTotalCount)
 }
 
-func findRollsAccessibles(grid aoc.Grid) []aoc.Point {
+func findRollsAccessibles(grid aoc.Grid[byte]) []aoc.Point {
 	var accessibles []aoc.Point
 
 	for p, v := range grid.Points() {

@@ -27,3 +27,23 @@ func FirstMinIndex(s []int) (int, int) {
 
 	return maxI, max
 }
+
+func SumSlice(s []int) int {
+	result := 0
+
+	for _, v := range s {
+		result += v
+	}
+
+	return result
+}
+
+func MultSlice(s []int) int {
+	result := 1
+
+	for _, v := range s {
+		result *= v
+	}
+
+	return result
+}
