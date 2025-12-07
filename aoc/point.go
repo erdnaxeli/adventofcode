@@ -40,7 +40,7 @@ func (p Point) RotateLeftZ() Point {
 
 // MoveNorth return a new point one step to the north.
 //
-// It supposes a grid where X goes from west to east, and Y from north to south.
+// It supposes a grid where X goes from north to south, and Y from east to west.
 func (p Point) MoveNorth() Point {
 	return Point{p.X - 1, p.Y, p.Z}
 }

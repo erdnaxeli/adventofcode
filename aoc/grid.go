@@ -35,6 +35,20 @@ func (g Grid[E]) IterAllColumn(y int) iter.Seq2[Point, E] {
 	return g.IterColumn(y, 0, g.MaxX())
 }
 
+func (g Grid[E]) IterLine(x int, yMin int, yMax int) iter.Seq2[Point, E] {
+	return func(yield func(Point, E) bool) {
+		for y, e := range g.grid[x][yMin : yMax+1] {
+			if !yield(Point{X: x, Y: y}, e) {
+				return
+			}
+		}
+	}
+}
+
+func (g Grid[E]) IterAllLine(x int) iter.Seq2[Point, E] {
+	return g.IterLine(x, 0, g.MaxX())
+}
+
 // Set sets a value on the grid
 //
 // It actually mutates the grid even if the receiver is not on a pointer because
