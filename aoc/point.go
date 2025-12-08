@@ -1,9 +1,21 @@
 package aoc
 
+import (
+	"math"
+)
+
 type Point struct {
 	X int
 	Y int
 	Z int
+}
+
+func NewPointXY(x int, y int) Point {
+	return NewPointXYZ(x, y, 0)
+}
+
+func NewPointXYZ(x int, y int, z int) Point {
+	return Point{X: x, Y: y, Z: z}
 }
 
 func (p Point) Add(o Point) Point {
@@ -55,4 +67,10 @@ func (p Point) MoveSouth() Point {
 
 func (p Point) MoveEast() Point {
 	return Point{p.X, p.Y + 1, p.Z}
+}
+
+func (p1 Point) Distance(p2 Point) float64 {
+	return math.Sqrt(math.Pow(float64(p1.X-p2.X), 2) +
+		math.Pow(float64(p1.Y-p2.Y), 2) +
+		math.Pow(float64(p1.Z-p2.Z), 2))
 }

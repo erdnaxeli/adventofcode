@@ -51,7 +51,7 @@ func (s String) SplitAtoi() []int {
 	return result
 }
 
-// SplitOn splits the String usin a given delimiter.
+// SplitOn splits the String using a given delimiter.
 func (s String) SplitOn(d string) []String {
 	var result []String
 	for _, p := range strings.Split(string(s), d) {
@@ -61,7 +61,7 @@ func (s String) SplitOn(d string) []String {
 	return result
 }
 
-// SplitOn splits the String usin a given delimiter and convert the results to integers.
+// SplitOn splits the String using a given delimiter and convert the results to integers.
 func (s String) SplitOnAtoi(d string) []int {
 	var result []int
 	for _, p := range strings.Split(string(s), d) {
@@ -71,7 +71,7 @@ func (s String) SplitOnAtoi(d string) []int {
 	return result
 }
 
-// SplitOn splits the String usin a given delimiter and convert the results to string.
+// SplitOn splits the String using a given delimiter and convert the results to string.
 func (s String) SplitOnS(d string) []string {
 	return strings.Split(string(s), d)
 }
