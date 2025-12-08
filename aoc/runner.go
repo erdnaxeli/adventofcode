@@ -171,7 +171,7 @@ func (r Runner) Run(day int, part int) {
 
 	log.Printf("Running day %d, part %d", day, part)
 
-	input := r.getInput(day, part)
+	input := r.GetInput(day, part)
 
 	t := time.Now()
 	solution := r.daysParts[day-1][part-1](input)
@@ -196,7 +196,7 @@ func (r Runner) Benchmark() {
 
 	for day := range 25 {
 		for part := range 2 {
-			input := r.getInput(day+1, part+1)
+			input := r.GetInput(day+1, part+1)
 			result := r.daysParts[day][part](input)
 			if result == "" {
 				continue
@@ -233,7 +233,7 @@ func (r Runner) Benchmark() {
 	}
 }
 
-func (r Runner) getInput(day int, part int) Input {
+func (r Runner) GetInput(day int, part int) Input {
 	input := r.cache.GetInput(r.year, day, part)
 	if input.content != "" {
 		return input

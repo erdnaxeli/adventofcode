@@ -17,6 +17,11 @@ type positionsCouple struct {
 func (s solver) Day8p1(input aoc.Input) string {
 	positions := readInputDay08(input)
 	couples := makePositionsCouples(positions)
+
+	return computeD8P1(positions, couples)
+}
+
+func computeD8P1(positions []aoc.Point, couples []positionsCouple) string {
 	circuits := make(map[aoc.Point]*aoc.Set[aoc.Point], len(positions))
 
 	// Make one circuit for each position
@@ -105,7 +110,9 @@ func readInputDay08(input aoc.Input) []aoc.Point {
 //
 // The list is ordered by the shortest distance.
 func makePositionsCouples(positions []aoc.Point) []positionsCouple {
-	work := slices.Clone(positions)
+	// Both slices points to the same underlying array, but as we only read it it
+	// is ok.
+	work := positions
 	var result []positionsCouple
 
 	for len(work) > 0 {
