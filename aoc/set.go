@@ -31,6 +31,17 @@ func (s Set[E]) Contains(e E) bool {
 	return ok
 }
 
+// First actually returns an arbitrary element of the set.
+func (s Set[E]) First() E {
+	for e := range s {
+		return e
+	}
+
+	// if the set is empty, we return the zero value for the type E
+	var e E
+	return e
+}
+
 func (s Set[E]) Len() int {
 	return len(s)
 }

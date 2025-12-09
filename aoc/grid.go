@@ -147,7 +147,11 @@ func (g Grid[E]) String() string {
 
 	if gB, ok := any(g).(Grid[byte]); ok {
 		for x := range gB.grid {
-			b.Write(gB.grid[x])
+			for y := range gB.grid[x] {
+				b.WriteByte(gB.grid[x][y])
+				b.WriteByte(' ')
+			}
+
 			b.WriteByte('\n')
 		}
 
