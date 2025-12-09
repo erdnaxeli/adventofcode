@@ -26,6 +26,11 @@ func (s Set[E]) Add(e E) {
 	s[e] = struct{}{}
 }
 
+func (s Set[E]) Contains(e E) bool {
+	_, ok := s[e]
+	return ok
+}
+
 func (s Set[E]) Len() int {
 	return len(s)
 }

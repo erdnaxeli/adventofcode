@@ -2,6 +2,7 @@ package aoc
 
 import (
 	"iter"
+	"strings"
 )
 
 var aroundRange = [...]int{-1, 0, 1}
@@ -11,6 +12,35 @@ var aroundRange = [...]int{-1, 0, 1}
 // It expects to be manipulated using Point objects to address positions in the grid.
 type Grid[E any] struct {
 	grid [][]E
+}
+
+func NewGridFromPoints[E any](points []Point, empty E, notEmpty E) Grid[E] {
+	xMax, yMax := 0, 0
+	for _, p := range points {
+		if p.X > xMax {
+			xMax = p.X
+		}
+
+		if p.Y > yMax {
+			yMax = p.Y
+		}
+	}
+
+	var grid [][]E
+	for range xMax + 1 {
+		var line []E
+		for range yMax + 1 {
+			line = append(line, empty)
+		}
+
+		grid = append(grid, line)
+	}
+
+	for _, p := range points {
+		grid[p.X][p.Y] = notEmpty
+	}
+
+	return Grid[E]{grid}
 }
 
 func (g Grid[E]) At(p Point) E {
@@ -110,4 +140,19 @@ func (g Grid[E]) Points() iter.Seq2[Point, E] {
 			}
 		}
 	}
+}
+
+func (g Grid[E]) String() string {
+	var b strings.Builder
+
+	if gB, ok := any(g).(Grid[byte]); ok {
+		for x := range gB.grid {
+			b.Write(gB.grid[x])
+			b.WriteByte('\n')
+		}
+
+		return b.String()
+	}
+
+	return ""
 }

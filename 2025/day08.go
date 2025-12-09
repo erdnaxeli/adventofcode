@@ -110,24 +110,11 @@ func readInputDay08(input aoc.Input) []aoc.Point {
 //
 // The list is ordered by the shortest distance.
 func makePositionsCouples(positions []aoc.Point) []positionsCouple {
-	// Both slices points to the same underlying array, but as we only read it it
-	// is ok.
-	work := positions
 	var result []positionsCouple
 
-	for len(work) > 0 {
-		p1 := work[0]
-		work = work[1:]
-
-		if len(work) == 0 {
-			continue
-		}
-
-		for _, p2 := range work {
-			d := p1.Distance(p2)
-			result = append(result, positionsCouple{p1: p1, p2: p2, d: d})
-		}
-
+	for c := range aoc.Combinations(positions) {
+		d := c[0].Distance(c[1])
+		result = append(result, positionsCouple{p1: c[0], p2: c[1], d: d})
 	}
 
 	slices.SortFunc(

@@ -108,7 +108,7 @@ func (i Input) ToStringSlice() []String {
 	return trimmedLines
 }
 
-// ToGrid parse the input as a grid.
+// ToGrid parses the input as a grid.
 //
 // x is the axe from top to bottom, y is the axis from left to right.
 // (0, 0) is the top left point.
@@ -130,6 +130,33 @@ func (i Input) ToGridS() Grid[String] {
 	return Grid[String]{grid: grid}
 }
 
+// ToPoints parses the input as a list of points, one by line.
+//
+// The coordinates must be separated by commas.
+func (i Input) ToPoints() []Point {
+	var points []Point
+	for line := range strings.SplitSeq(i.content, i.getDelimiter()) {
+		parts := strings.Split(line, ",")
+		var p Point
+
+		if len(parts) >= 1 {
+			p.X = Atoi(parts[0])
+		}
+
+		if len(parts) >= 2 {
+			p.Y = Atoi(parts[1])
+		}
+
+		if len(parts) >= 3 {
+			p.Z = Atoi(parts[2])
+		}
+
+		points = append(points, p)
+	}
+
+	return points
+}
+
 func (i Input) ToRanges(inclusive bool) []Range {
 	var ranges []Range
 
@@ -141,7 +168,7 @@ func (i Input) ToRanges(inclusive bool) []Range {
 	return ranges
 }
 
-// MultiInput split and parse the input as two differents input separated by an empty line.
+// MultiInput splits and parse the input as two differents input separated by an empty line.
 func MultiInput[R1, R2 any](i Input, parseInput1 func(i Input) R1, parseInput2 func(i Input) R2) (R1, R2) {
 	parts := strings.Split(i.content, "\n\n")
 	return parseInput1(NewInput(parts[0])), parseInput2(NewInput(parts[1]))

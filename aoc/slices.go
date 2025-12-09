@@ -1,5 +1,19 @@
 package aoc
 
+import "iter"
+
+func Combinations[S ~[]E, E any](s S) iter.Seq[[]E] {
+	return func(yield func([]E) bool) {
+		for i, x := range s {
+			for _, y := range s[i+1:] {
+				if !yield([]E{x, y}) {
+					return
+				}
+			}
+		}
+	}
+}
+
 // FirstMaxIndex returns the index of the first max value found, and the value.
 func FirstMaxIndex(s []int) (int, int) {
 	max := s[0]
