@@ -1,7 +1,28 @@
 package aoc
 
-import "iter"
+import (
+	"iter"
+)
 
+// Allcombinations returns an iterator over all combinations of elements in s.
+func AllCombinations[S ~[]E, E any](s S) iter.Seq[[]E] {
+	return func(yield func([]E) bool) {
+		for subset := 1; subset < (1 << len(s)); subset++ {
+			var c []E
+			for i := range s {
+				if (subset>>i)&1 == 1 {
+					c = append(c, s[i])
+				}
+			}
+
+			if !yield(c) {
+				return
+			}
+		}
+	}
+}
+
+// Combinations returns an iterator over all two sized combinations of elements in s.
 func Combinations[S ~[]E, E any](s S) iter.Seq[[]E] {
 	return func(yield func([]E) bool) {
 		for i, x := range s {
