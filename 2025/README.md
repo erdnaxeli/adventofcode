@@ -14,3 +14,24 @@ Here are some notes:
   Implicit variables and implicit type conversion also made the code very compact,
   which is nice when writing but terrible when reading (and the implicite type
   conversion is a potential source of error).
+
+* day 9: the _classic_ "is this point in this shape?" problem. I still struggle to solve it.
+
+* day 10:
+  * writing a function that returns all (non repeated) combinations of elements
+    in a list is suprisingly very hard. Luckily I remembered about the binary _hack_, after
+    45 minutes of struggling.
+  * thanks to the AOC author this is no use at all for the part 2 of the day
+
+
+* day 11: classic path search in a tree as there is every year. Some notes:
+  * using a FIFO means a breadth first search, and fill all the memory very quickly
+  * using a LIFO means a depth first search, and use a constante (little) amount of memory
+  * using a cache (a map) to record how many paths are valid from a point avoid going
+    multiple time through the same branches
+  * my algorithm probably does not work if path are looping: first it will loop endlessly,
+    secondly the cache will probably be wrong. But the input does not contains such looping
+    path fortunately.
+  * I cheated a little bit, because while the problem statement says that the path must go
+    through "dac" and "ftt" in any order, we can check that there is no path from "dac" to
+    "ftt", which means the order is always "ftt" and then "dac".
