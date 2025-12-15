@@ -118,7 +118,7 @@ func (i Input) ToGrid() Grid[byte] {
 		grid = append(grid, []byte(line))
 	}
 
-	return Grid[byte]{grid: grid}
+	return grid
 }
 
 func (i Input) ToGridS() Grid[String] {
@@ -127,7 +127,7 @@ func (i Input) ToGridS() Grid[String] {
 		grid = append(grid, line.Split())
 	}
 
-	return Grid[String]{grid: grid}
+	return grid
 }
 
 // ToPoints parses the input as a list of points, one by line.

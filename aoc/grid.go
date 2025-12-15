@@ -10,9 +10,7 @@ var aroundRange = [...]int{-1, 0, 1}
 // Grid represent a grid.
 //
 // It expects to be manipulated using Point objects to address positions in the grid.
-type Grid[E any] struct {
-	grid [][]E
-}
+type Grid[E any] [][]E
 
 func NewGridFromPoints[E any](points []Point, empty E, notEmpty E) Grid[E] {
 	xMax, yMax := 0, 0
@@ -40,21 +38,21 @@ func NewGridFromPoints[E any](points []Point, empty E, notEmpty E) Grid[E] {
 		grid[p.X][p.Y] = notEmpty
 	}
 
-	return Grid[E]{grid}
+	return grid
 }
 
 func (g Grid[E]) At(p Point) E {
-	return g.grid[p.X][p.Y]
+	return g[p.X][p.Y]
 }
 
 func (g Grid[E]) AtXY(x int, y int) E {
-	return g.grid[x][y]
+	return g[x][y]
 }
 
 func (g Grid[E]) IterColumn(y int, xMin int, xMax int) iter.Seq2[Point, E] {
 	return func(yield func(Point, E) bool) {
 		for x := xMin; x <= xMax; x++ {
-			if !yield(Point{X: x, Y: y}, g.grid[x][y]) {
+			if !yield(Point{X: x, Y: y}, g[x][y]) {
 				return
 			}
 		}
@@ -67,7 +65,7 @@ func (g Grid[E]) IterAllColumn(y int) iter.Seq2[Point, E] {
 
 func (g Grid[E]) IterLine(x int, yMin int, yMax int) iter.Seq2[Point, E] {
 	return func(yield func(Point, E) bool) {
-		for y, e := range g.grid[x][yMin : yMax+1] {
+		for y, e := range g[x][yMin : yMax+1] {
 			if !yield(Point{X: x, Y: y}, e) {
 				return
 			}
@@ -84,11 +82,11 @@ func (g Grid[E]) IterAllLine(x int) iter.Seq2[Point, E] {
 // It actually mutates the grid even if the receiver is not on a pointer because
 // it involves slices on the inside, which use pointers.
 func (g Grid[E]) Set(p Point, v E) {
-	g.grid[p.X][p.Y] = v
+	g[p.X][p.Y] = v
 }
 
 func (g Grid[E]) LenX() int {
-	return len(g.grid)
+	return len(g)
 }
 
 func (g Grid[E]) LenY() int {
@@ -96,7 +94,7 @@ func (g Grid[E]) LenY() int {
 		return 0
 	}
 
-	return len(g.grid[0])
+	return len(g[0])
 }
 
 func (g Grid[E]) MaxX() int {
@@ -146,9 +144,9 @@ func (g Grid[E]) String() string {
 	var b strings.Builder
 
 	if gB, ok := any(g).(Grid[byte]); ok {
-		for x := range gB.grid {
-			for y := range gB.grid[x] {
-				b.WriteByte(gB.grid[x][y])
+		for x := range gB {
+			for y := range gB[x] {
+				b.WriteByte(gB[x][y])
 				b.WriteByte(' ')
 			}
 
