@@ -25,6 +25,9 @@ func (s solver) Day9p2(input aoc.Input) string {
 	// the exercice statement use a grid where X is horizontal and Y is vertical
 	for i := range redTiles {
 		redTiles[i].X, redTiles[i].Y = redTiles[i].Y, redTiles[i].X
+		// We scale the grid by 2 to _streth_ the shape.
+		redTiles[i].X *= 2
+		redTiles[i].Y *= 2
 	}
 
 	// we add the first point at the end to complete the loop
@@ -69,32 +72,20 @@ func (s solver) Day9p2(input aoc.Input) string {
 	combinations := aoc.Combinations(redTiles)
 	shape := aoc.NewShape(borderPoints)
 	// fmt.Println("shape contains", aoc.NewPointXY(7, 2), shape.Contains(aoc.NewPointXY(7, 2)))
-
-	areaChan := make(chan int)
 	maxArea := 0
-
-	go func() {
-		for area := range areaChan {
-			if area > maxArea {
-				fmt.Println(area)
-				maxArea = area
-			}
-		}
-	}()
+	cache := make(map[aoc.Point]bool)
 
 	for c := range combinations {
-		go func(c []aoc.Point) {
-			p1, p2 := c[0], c[1]
-			p3 := aoc.NewPointXY(p1.X, p2.Y)
-			p4 := aoc.NewPointXY(p2.X, p1.Y)
+		if !isSquareValid(c, shape, cache) {
+			continue
+		}
 
-			if !shape.Contains(p3) || !shape.Contains(p4) {
-				return
-			}
+		area := area(c[0], c[1])
+		if area > maxArea {
+			fmt.Println(area)
+			maxArea = area
+		}
 
-			area := area(c[0], c[1])
-			areaChan <- area
-		}(c)
 	}
 
 	return aoc.ResultI(maxArea)
@@ -104,38 +95,25 @@ func area(p1 aoc.Point, p2 aoc.Point) int {
 	return (aoc.AbsI(p1.X-p2.X) + 1) * (aoc.AbsI(p1.Y-p2.Y) + 1)
 }
 
-func shapeContains(shapeBorder aoc.Set[aoc.Point], p aoc.Point, minX int, maxX int) bool {
-	if shapeBorder.Contains(p) {
-		return true
-	}
+func isSquareValid(c []aoc.Point, shape aoc.Shape, cache map[aoc.Point]bool) bool {
+	for x := min(c[0].X, c[1].X); x <= max(c[0].X, c[1].X); x++ {
+		for y := min(c[0].Y, c[1].Y); y <= max(c[0].Y, c[1].Y); y++ {
+			p := aoc.XY(x, y)
+			if r, ok := cache[p]; ok {
+				if !r {
+					return false
+				}
 
-	dLeft := p.X - minX
-	dRight := maxX - p.X
-	borderCrossCount := 0
-	onBorderPreviously := false
-
-	if dRight < dLeft {
-		for x := maxX; x > p.X; x-- {
-			onBorder := shapeBorder.Contains(aoc.NewPointXY(x, p.Y))
-			if onBorder && !onBorderPreviously {
-				borderCrossCount++
+				continue
 			}
 
-			onBorderPreviously = onBorder
-		}
-	} else {
-		for x := minX; x < p.X; x++ {
-			onBorder := shapeBorder.Contains(aoc.NewPointXY(x, p.Y))
-			if onBorder && !onBorderPreviously {
-				borderCrossCount++
+			if !shape.Contains(p) {
+				cache[p] = false
+				return false
 			}
 
-			onBorderPreviously = onBorder
+			cache[p] = true
 		}
-	}
-
-	if borderCrossCount%2 == 0 {
-		return false
 	}
 
 	return true

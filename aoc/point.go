@@ -10,6 +10,10 @@ type Point struct {
 	Z int
 }
 
+func XY(x int, y int) Point {
+	return NewPointXY(x, y)
+}
+
 func NewPointXY(x int, y int) Point {
 	return NewPointXYZ(x, y, 0)
 }
