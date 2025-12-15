@@ -54,15 +54,15 @@ func CombineRanges(ranges []Range) []Range {
 func (r Range) Contains(v int) bool {
 	if r.inclusive {
 		return r.Start <= v && v <= r.End
-	} else {
-		return r.Start < v && v < r.End
 	}
+
+	return r.Start < v && v < r.End
 }
 
 func (r Range) Len() int {
 	if r.inclusive {
 		return r.End - r.Start + 1
-	} else {
-		return r.End - r.Start - 1
 	}
+
+	return r.End - r.Start - 1
 }

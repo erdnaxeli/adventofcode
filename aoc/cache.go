@@ -35,14 +35,20 @@ func (c DefaultCache) GetInput(year int, day int, part int) Input {
 func (c DefaultCache) StoreInput(year int, day int, part int, input Input) error {
 	home := os.Getenv("HOME")
 	if home == "" {
-		return errors.New("No env var $HOME defined.")
+		return errors.New("no env var $HOME defined")
 	}
 
 	directory := fmt.Sprintf("%s/.cache/adventofcode/%d", home, year)
-	os.MkdirAll(directory, 0700)
+	err := os.MkdirAll(directory, 0700)
+	if err != nil {
+		return err
+	}
 
 	filename := fmt.Sprintf("%s/%d", directory, day)
-	os.WriteFile(filename, []byte(input.content), 0600)
+	err = os.WriteFile(filename, []byte(input.content), 0600)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -179,7 +179,7 @@ func (i Input) getDelimiter() string {
 		return i.delimiter
 	} else if i.multiline {
 		return "\n"
-	} else {
-		return ", "
 	}
+
+	return ", "
 }

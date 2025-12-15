@@ -37,23 +37,32 @@ func main() {
 		log.Fatalf("It must be used like this: %s module-name", os.Args[0])
 	}
 
-	runTemplate("go.mod", GO_MOD_TMPL, goModConfig{os.Args[1]})
-	runTemplate("main.go", MAIN_TMPL, mainConfig{Year: time.Now().Year()})
+	err := runTemplate("go.mod", GO_MOD_TMPL, goModConfig{os.Args[1]})
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = runTemplate("main.go", MAIN_TMPL, mainConfig{Year: time.Now().Year()})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	for day := 1; day <= 25; day++ {
-		runTemplate(fmt.Sprintf("day%02d.go", day), DAY_TMPL, dayConfig{Day: day})
+		err = runTemplate(fmt.Sprintf("day%02d.go", day), DAY_TMPL, dayConfig{Day: day})
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-func runTemplate(filename string, tmplContent string, data any) {
+func runTemplate(filename string, tmplContent string, data any) error {
 	_, err := os.Stat(filename)
 	if !errors.Is(err, os.ErrNotExist) {
-		log.Fatalf("File %s already exist, stopping here to avoid erasing anything.", filename)
+		return fmt.Errorf("file %s already exist, stopping here to avoid erasing anything", filename)
 	}
 
 	file, err := os.Create(filename)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer file.Close()
 
@@ -63,6 +72,8 @@ func runTemplate(filename string, tmplContent string, data any) {
 	cmd := exec.Command("go", "mod", "tidy")
 	err = cmd.Run()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }

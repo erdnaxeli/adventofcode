@@ -4,7 +4,7 @@ import (
 	"iter"
 )
 
-// Allcombinations returns an iterator over all combinations of elements in s.
+// AllCombinations returns an iterator over all combinations of elements in s.
 func AllCombinations[S ~[]E, E any](s S) iter.Seq[[]E] {
 	return func(yield func([]E) bool) {
 		for subset := 1; subset < (1 << len(s)); subset++ {
@@ -37,16 +37,16 @@ func Combinations[S ~[]E, E any](s S) iter.Seq[[]E] {
 
 // FirstMaxIndex returns the index of the first max value found, and the value.
 func FirstMaxIndex(s []int) (int, int) {
-	max := s[0]
+	maxV := s[0]
 	maxI := 0
 	for i, e := range s {
-		if e > max {
-			max = e
+		if e > maxV {
+			maxV = e
 			maxI = i
 		}
 	}
 
-	return maxI, max
+	return maxI, maxV
 }
 
 // FirstMaxIndex returns the index of the first min value found, and the value.

@@ -228,7 +228,7 @@ func (r Runner) Benchmark() {
 				memPerOp = fmt.Sprintf("%.0f b/op", bytes)
 			}
 
-			fmt.Fprintf(stdout, "day %d, part %d: %s\t%s\n", day+1, part+1, timePerOp, memPerOp)
+			_, _ = fmt.Fprintf(stdout, "day %d, part %d: %s\t%s\n", day+1, part+1, timePerOp, memPerOp)
 		}
 	}
 }

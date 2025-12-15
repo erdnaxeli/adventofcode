@@ -68,7 +68,7 @@ func (s solver) Day9p2(input aoc.Input) string {
 
 	combinations := aoc.Combinations(redTiles)
 	shape := aoc.NewShape(borderPoints)
-	//fmt.Println("shape contains", aoc.NewPointXY(7, 2), shape.Contains(aoc.NewPointXY(7, 2)))
+	// fmt.Println("shape contains", aoc.NewPointXY(7, 2), shape.Contains(aoc.NewPointXY(7, 2)))
 
 	areaChan := make(chan int)
 	maxArea := 0

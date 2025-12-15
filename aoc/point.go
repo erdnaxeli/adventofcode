@@ -69,8 +69,8 @@ func (p Point) MoveEast() Point {
 	return Point{p.X, p.Y + 1, p.Z}
 }
 
-func (p1 Point) Distance(p2 Point) float64 {
-	return math.Sqrt(math.Pow(float64(p1.X-p2.X), 2) +
-		math.Pow(float64(p1.Y-p2.Y), 2) +
-		math.Pow(float64(p1.Z-p2.Z), 2))
+func (p Point) Distance(other Point) float64 {
+	return math.Sqrt(math.Pow(float64(p.X-other.X), 2) +
+		math.Pow(float64(p.Y-other.Y), 2) +
+		math.Pow(float64(p.Z-other.Z), 2))
 }

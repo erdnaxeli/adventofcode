@@ -77,16 +77,15 @@ func readMachines(input aoc.Input) []Machine {
 		}
 
 		joltage := parts[len(parts)-1]
-		for _, j := range strings.Split(joltage[1:len(joltage)-1], ",") {
+		for j := range strings.SplitSeq(joltage[1:len(joltage)-1], ",") {
 			machine.joltage = append(machine.joltage, aoc.Atoi(j))
 		}
 
 		parts = parts[1 : len(parts)-1]
 		for _, part := range parts {
 			var button []int
-			button_parts := strings.Split(part[1:len(part)-1], ",")
-			for _, button_part := range button_parts {
-				button = append(button, aoc.Atoi(button_part))
+			for buttonPart := range strings.SplitSeq(part[1:len(part)-1], ",") {
+				button = append(button, aoc.Atoi(buttonPart))
 			}
 
 			machine.buttons = append(machine.buttons, button)

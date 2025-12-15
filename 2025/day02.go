@@ -7,11 +7,11 @@ import (
 )
 
 func (s solver) Day2p1(input aoc.Input) string {
-	productIdRanges := input.Delimiter(",").ToRanges(true)
+	productIDRanges := input.Delimiter(",").ToRanges(true)
 
 	sum := 0
-	for _, productIdRange := range productIdRanges {
-		sum += getSumInvalidProductID(productIdRange)
+	for _, productIDRange := range productIDRanges {
+		sum += getSumInvalidProductID(productIDRange)
 	}
 
 	return aoc.ResultI(sum)
@@ -22,18 +22,18 @@ func (s solver) Day2p2(input aoc.Input) string {
 	return ""
 }
 
-func getSumInvalidProductID(productIdRange aoc.Range) int {
+func getSumInvalidProductID(productIDRange aoc.Range) int {
 	sum := 0
-	for productId := productIdRange.Start; productId <= productIdRange.End; productId++ {
-		if !isProductIDValid(productId) {
-			sum += productId
+	for productID := productIDRange.Start; productID <= productIDRange.End; productID++ {
+		if !isProductIDValid(productID) {
+			sum += productID
 		}
 	}
 
 	return sum
 }
 
-func isProductIDValid(productId int) bool {
-	s := fmt.Sprint(productId)
+func isProductIDValid(productID int) bool {
+	s := fmt.Sprint(productID)
 	return len(s)%2 != 0 || s[0:len(s)/2] != s[len(s)/2:]
 }

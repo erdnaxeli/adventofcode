@@ -19,7 +19,7 @@ func (s solver) Day5p1(input aoc.Input) string {
 	for _, id := range ids {
 		for _, r := range ranges {
 			if r.Contains(id) {
-				count += 1
+				count++
 				break
 			}
 		}
