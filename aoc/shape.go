@@ -58,7 +58,7 @@ func NewShape(points Set[Point]) Shape {
 // > #.##.#
 // > #....#
 // > ######
-
+//
 // is an invalid shape, but
 //
 // > ###.###

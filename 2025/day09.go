@@ -1,7 +1,9 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
+	"slices"
 
 	"github.com/erdnaxeli/adventofcode/aoc"
 )
@@ -74,9 +76,28 @@ func (s solver) Day9p2(input aoc.Input) string {
 	// fmt.Println("shape contains", aoc.NewPointXY(7, 2), shape.Contains(aoc.NewPointXY(7, 2)))
 	maxArea := 0
 	cache := make(map[aoc.Point]bool)
+	minMax := make(map[int][]int)
+
+	bPSorted := slices.SortedFunc(borderPoints.Values(), func(a aoc.Point, b aoc.Point) int {
+		if a.X == b.X {
+			return cmp.Compare(a.Y, b.Y)
+		}
+
+		return cmp.Compare(a.X, b.X)
+	})
+	previous := aoc.XY(-1, -1)
+	for _, p := range bPSorted {
+		if p.X != previous.X {
+			minMax[previous.X] = append(minMax[previous.X], previous.Y)
+			minMax[p.X] = append(minMax[p.X], p.Y)
+		}
+
+		previous = p
+	}
+	minMax[previous.X] = append(minMax[previous.X], previous.Y)
 
 	for c := range combinations {
-		if !isSquareValid(c, shape, cache) {
+		if !isSquareValid(c, shape, cache, minMax) {
 			continue
 		}
 
@@ -95,26 +116,91 @@ func area(p1 aoc.Point, p2 aoc.Point) int {
 	return (aoc.AbsI(p1.X-p2.X) + 1) * (aoc.AbsI(p1.Y-p2.Y) + 1)
 }
 
-func isSquareValid(c []aoc.Point, shape aoc.Shape, cache map[aoc.Point]bool) bool {
-	for x := min(c[0].X, c[1].X); x <= max(c[0].X, c[1].X); x++ {
-		for y := min(c[0].Y, c[1].Y); y <= max(c[0].Y, c[1].Y); y++ {
-			p := aoc.XY(x, y)
-			if r, ok := cache[p]; ok {
-				if !r {
-					return false
-				}
+func isSquareValid(c []aoc.Point, shape aoc.Shape, cache map[aoc.Point]bool, minMax map[int][]int) bool {
+	p1 := aoc.XY(min(c[0].X, c[1].X), min(c[0].Y, c[1].Y))
+	p2 := aoc.XY(max(c[0].X, c[1].X), max(c[0].Y, c[1].Y))
+	fmt.Printf("%v => %v\n", p1, p2)
 
-				continue
-			}
+	for y := p1.Y; y <= p2.Y; y++ {
+		p := aoc.XY(p1.X, y)
 
-			if !shape.Contains(p) {
-				cache[p] = false
+		if r, ok := cache[p]; ok {
+			if !r {
 				return false
 			}
 
-			cache[p] = true
+			continue
 		}
+
+		if !shape.Contains(p) {
+			cache[p] = false
+			return false
+		}
+
+		cache[p] = true
 	}
+	fmt.Println(1)
+
+	for y := p1.Y; y <= p2.Y; y++ {
+		p := aoc.XY(p2.X, y)
+
+		if r, ok := cache[p]; ok {
+			if !r {
+				return false
+			}
+
+			continue
+		}
+
+		if !shape.Contains(p) {
+			cache[p] = false
+			return false
+		}
+
+		cache[p] = true
+	}
+	fmt.Println(2)
+
+	for x := p1.X; x <= p2.X; x++ {
+		p := aoc.XY(x, p1.Y)
+		fmt.Println(p)
+
+		if r, ok := cache[p]; ok {
+			if !r {
+				return false
+			}
+
+			continue
+		}
+
+		if !shape.Contains(p) {
+			cache[p] = false
+			return false
+		}
+
+		cache[p] = true
+	}
+	fmt.Println(3)
+
+	for x := p1.X; x <= p2.X; x++ {
+		p := aoc.XY(x, p2.Y)
+
+		if r, ok := cache[p]; ok {
+			if !r {
+				return false
+			}
+
+			continue
+		}
+
+		if !shape.Contains(p) {
+			cache[p] = false
+			return false
+		}
+
+		cache[p] = true
+	}
+	fmt.Println(4)
 
 	return true
 }
