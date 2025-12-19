@@ -1,5 +1,5 @@
 To run:
 ```
-poetry install
-poetry run jupyter-lab
+uv install
+uv run jupyter lab
 ```

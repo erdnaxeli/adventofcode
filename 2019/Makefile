@@ -1,2 +1,2 @@
 all:
-	poetry run jupyter-lab
+	uv run jupyter lab
