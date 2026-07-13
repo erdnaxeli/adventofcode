@@ -1,4 +1,3 @@
-from itertools import product
 
 
 def read_fuel_requirements():

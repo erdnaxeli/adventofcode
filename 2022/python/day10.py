@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 
 class Instruction(ABC):
     cycles: int
 
     @abstractmethod
-    def exec(state, cycle):
-        ...
+    def exec(state, cycle): ...
 
 
 class Noop(Instruction):

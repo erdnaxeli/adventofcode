@@ -19,7 +19,9 @@ class PathFinder:
                 print(i, len(paths), len(path))
 
             if self.map.is_done(path):
-                if best_path is None or self.map.evaluate_best_cost(path) < self.map.evaluate_best_cost(best_path):
+                if best_path is None or self.map.evaluate_best_cost(
+                    path
+                ) < self.map.evaluate_best_cost(best_path):
                     best_path = path
 
                 continue

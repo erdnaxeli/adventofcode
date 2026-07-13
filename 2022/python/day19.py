@@ -64,8 +64,7 @@ class BlueprintState:
         return self.final_state[Material.GEODE]
 
     @property
-    def current_state(self):
-        ...
+    def current_state(self): ...
 
     def next_states(self) -> Iterator[BlueprintState]:
         for robot in self.blueprint.robots:

@@ -26,7 +26,6 @@ def fill_map(map):
 
 def get_start(map):
     for y in range(0, len(map)):
-
         for x in range(0, len(map[0])):
             if map[y][x] == ".":
                 return (x, y)
@@ -70,7 +69,7 @@ def fold_cube(x, y, map, facing):
         elif 100 <= y <= 149:
             return 149, 49 - (y - 100), (-1, 0)
     elif x == 150 and 0 <= y <= 149:
-        return 99,  100 + (49 - y),  (-1, 0)
+        return 99, 100 + (49 - y), (-1, 0)
 
     if y == -1:
         if 50 <= x <= 99:
@@ -87,7 +86,6 @@ def fold_cube(x, y, map, facing):
         return 100 + x, 0, (0, 1)
 
     return x, y, facing
-
 
 
 def apply_path(map, path, x, y, facing, fold_method):
@@ -107,8 +105,8 @@ def apply_path(map, path, x, y, facing, fold_method):
                     xx, yy = add_point((x, y), facing)
                     print(xx, yy)
                     # if (xx, yy) == (100, -1):
-                        # breakpoint()
-                    xx, yy, facing = fold_method(xx ,yy ,map, facing)
+                    # breakpoint()
+                    xx, yy, facing = fold_method(xx, yy, map, facing)
                     print(xx, yy)
                     print()
                     xx %= max_x
@@ -120,7 +118,6 @@ def apply_path(map, path, x, y, facing, fold_method):
                             x, y = xx, yy
                         case err:
                             raise ValueError(f"Unknown case {err}")
-
 
             case "L":
                 facing = (facing[1], -facing[0])
