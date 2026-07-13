@@ -102,7 +102,7 @@ def part2() -> int:
             if v != program[i]:
                 break
         else:
-            if i == len(program)-1:
+            if i == len(program) - 1:
                 return a
 
         a += 1

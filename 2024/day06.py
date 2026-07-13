@@ -56,7 +56,7 @@ def will_it_loop(x, y, direction, grid, points):
 def print_grid(grid, points):
     xmax, ymax = max(grid.keys())
     for x in range(xmax + 1):
-        for y in range(xmax + 1):
+        for y in range(ymax + 1):
             if points[(x, y)]:
                 print("*", end="")
             else:
